@@ -1,6 +1,7 @@
 {
-  "scriptId": "1EdbU5pVJC7dHzadDOENKTqbbnog66siJEMa4WOQVj8XOYmRYgARHRpHn",
-  "rootDir": "",
+  "scriptId": "1q9TtRUYruQa1PH5955K7aPL7nk4KP7p-YI_-Y3pGe6TREkm-7ypmX-du",
+  "rootDir": "gas-calendar-sync",
+  "parentId": "1yuvrukQTPn5BEkkmKQTMI3dVUZ0R6_Jt-ILSfxMZtvA",
   "scriptExtensions": [
     ".js",
     ".gs"
