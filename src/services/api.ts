@@ -143,6 +143,64 @@ export const api = {
     const events = loadData<Event[]>(KEY_EVENTS, INITIAL_EVENTS);
     const newEvent = { ...event, id: `evt-${Date.now()}` };
     saveData(KEY_EVENTS, [...events, newEvent]);
+
+    // Google Calendar Sync via GAS
+    const gasUrl = localStorage.getItem('theta_gas_url');
+    if (gasUrl) {
+      try {
+        // Send a "no-cors" request (we won't get a response body, but it triggers the script)
+        // or a standard POST if GAS is configured to handle CORS (requires complexity).
+        // For simplicity in this demo environment, we use no-cors to fire-and-forget.
+        // NOTE: 'no-cors' mode only creates the request if the server allows it (opaque). 
+        // GAS Web Apps usually handle simple POST requests well if we send text/plain.
+
+        // We structure the payload to match what GAS expects
+        const payload = {
+          title: newEvent.title,
+          startTime: `${newEvent.date.split('T')[0]}T${newEvent.startTime}:00`,
+          endTime: `${newEvent.date.split('T')[0]}T${newEvent.endTime}:00`,
+          description: `${newEvent.description}\n\n【お申し込みはこちら】\nhttps://os3-318-48990.vs.sakura.ne.jp/theta-experience/#/schedule`,
+          location: newEvent.type === '対面' ? newEvent.location : 'Zoom'
+        };
+
+        // We use fetch with 'no-cors' so the browser doesn't block it, 
+        // but we need to send data stringified.
+        // However, GAS `doPost` handles JSON payload best if header is application/json, 
+        // which triggers CORS. 
+        // Workaround: Send as text/plain (simple request) and parse in GAS.
+        // Use standard fetch with CORS. GAS works best with redirects (302) which fetch follows automatically.
+        // But for CORS preflight to work, we need a robust GAS script or use 'no-cors' if script is simple.
+        // We are updating GAS to handle JSON response properly.
+        fetch(gasUrl, {
+          method: 'POST',
+          mode: 'cors', // Standard CORS request
+          headers: {
+            'Content-Type': 'text/plain;charset=utf-8'
+            // Note: GAS doPost triggers 'Simple Request' CORS logic easily with text/plain.
+            // Sending application/json triggers preflight (OPTIONS) which GAS doesn't consistently support 
+            // without workarounds. We stick to text/plain but send JSON string body.
+            // The updated Code.js parses this correctly.
+          },
+          body: JSON.stringify(payload)
+        })
+          .then(res => res.json())
+          .then(data => {
+            console.log("GAS Response:", data);
+            if (data.error) {
+              console.error("GAS Error:", data.error);
+              alert(`カレンダー連携エラー: ${data.error}`);
+            }
+          })
+          .catch(e => {
+            console.error("GAS Sync Error:", e);
+            // alert("カレンダー連携に失敗しました (ネットワークエラーなど)");
+          });
+
+      } catch (err) {
+        console.error("Failed to sync with Google Calendar", err);
+      }
+    }
+
     return newEvent;
   },
 
@@ -163,6 +221,13 @@ export const api = {
     saveData(KEY_EVENTS, updated);
   },
 
+  deleteEvent: async (id: string): Promise<void> => {
+    await delay(300);
+    const events = loadData<Event[]>(KEY_EVENTS, INITIAL_EVENTS);
+    const updated = events.filter(e => e.id !== id);
+    saveData(KEY_EVENTS, updated);
+  },
+
   // --- Registrations (Simulating Google Sheets Rows) ---
   getRegistrations: async (): Promise<Registration[]> => {
     await delay(600);
@@ -177,7 +242,11 @@ export const api = {
       id: `reg-${Date.now()}`,
       registeredAt: new Date().toISOString(),
       status: 'confirmed',
-      surveySent: false
+      surveySent: false,
+      // Ensure optional fields are preserved if passed
+      prefecture: reg.prefecture,
+      dob: reg.dob,
+      paymentMethod: reg.paymentMethod
     };
     saveData(KEY_REGS, [...regs, newReg]);
     return newReg;
@@ -239,7 +308,7 @@ export const api = {
       id: `fb-imp-${Date.now()}-${index}`,
       isApproved: true, // Auto-approve admin imports
       // Use provided date or fallback to now if missing (though interface implies it might be separate in UI logic)
-      createdAt: (fb as any).date ? new Date((fb as any).date).toISOString() : new Date().toISOString() 
+      createdAt: (fb as any).date ? new Date((fb as any).date).toISOString() : new Date().toISOString()
     }));
     saveData(KEY_FEEDBACK, [...all, ...newItems]);
   },
@@ -275,5 +344,16 @@ export const api = {
     await delay(500);
     saveData(KEY_INSTRUCTOR, profile);
     return profile;
+  },
+
+  // --- Google Calendar (GAS) ---
+  getGasUrl: async (): Promise<string> => {
+    await delay(200);
+    return localStorage.getItem('theta_gas_url') || '';
+  },
+
+  saveGasUrl: async (url: string): Promise<void> => {
+    await delay(200);
+    localStorage.setItem('theta_gas_url', url);
   }
 };

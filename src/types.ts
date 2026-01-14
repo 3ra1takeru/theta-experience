@@ -23,6 +23,9 @@ export interface Registration {
   applicantName: string;
   email: string;
   phone: string;
+  prefecture?: string; // New
+  dob?: string;       // New (YYYY-MM-DD)
+  paymentMethod?: 'paypal' | 'paypay' | 'bank_transfer'; // New
   registeredAt: string;
   status: 'confirmed' | 'canceled';
   surveySent: boolean;

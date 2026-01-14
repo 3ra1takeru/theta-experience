@@ -1,0 +1,7 @@
+services:
+  theta-experience:
+    build: .
+    container_name: theta-experience
+    restart: always
+    ports:
+      - "8081:80"
