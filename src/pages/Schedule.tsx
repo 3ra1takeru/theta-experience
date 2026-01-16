@@ -5,6 +5,14 @@ import { Calendar, MapPin, Monitor, Clock, CheckCircle, AlertCircle, Users } fro
 import { format, parseISO } from 'date-fns';
 import { ja } from 'date-fns/locale';
 import { PayPalScriptProvider, PayPalButtons } from "@paypal/react-paypal-js";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
+import { Card, CardContent } from "@/components/ui/card";
+import { cn } from "@/lib/utils";
 
 // PayPal Client ID (Provided by User)
 const PAYPAL_CLIENT_ID = "Ab4ZtIdavN0_ZQqqnygXwbEFYCtpp9gLL9cDFH8kbgVVFFMWlZ3INAbvOoOiluYbY3RthfcRHPCH-jvc";
@@ -76,9 +84,14 @@ export const Schedule: React.FC = () => {
     });
   };
 
-  const handleFormChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
+  const handleFormChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
+
+  const handleValueChange = (name: string, value: string) => {
+    setFormData({ ...formData, [name]: value });
+  };
+
 
   const isFormValid = formData.name && formData.email && formData.phone && formData.prefecture && formData.dob;
 
@@ -122,10 +135,10 @@ export const Schedule: React.FC = () => {
   }
 
   return (
-    <div className="py-24 min-h-screen relative">
+    <div className="py-24 min-h-screen relative bg-slate-50">
       <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
-        <div className="text-center mb-16">
-          <h2 className="text-4xl font-bold text-slate-800 mb-6 font-heading">体験会スケジュール</h2>
+        <div className="text-center mb-16 space-y-4">
+          <h2 className="text-4xl font-bold text-slate-800 font-heading">体験会スケジュール</h2>
           <p className="text-slate-600">ご希望の日程を選んでお申し込みください。</p>
           <div className="mt-6 flex justify-center">
             <label className="flex items-center space-x-2 cursor-pointer bg-white px-4 py-2 rounded-full shadow-sm border border-slate-200 hover:bg-slate-50 transition-colors">
@@ -145,7 +158,7 @@ export const Schedule: React.FC = () => {
             .filter(e => showPastEvents ? true : e.status === 'upcoming')
             .sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime())
             .length === 0 ? (
-            <div className="text-center py-12 glass rounded-xl shadow-sm">
+            <div className="text-center py-12 bg-white/50 border border-dashed border-slate-200 rounded-xl">
               <p className="text-slate-500">現在予定されている体験会はありません。</p>
             </div>
           ) : (
@@ -154,50 +167,52 @@ export const Schedule: React.FC = () => {
               const isFull = remaining === 0;
 
               return (
-                <div key={event.id} className="glass rounded-xl shadow-sm border border-white/50 overflow-hidden hover:shadow-md transition-shadow flex flex-col md:flex-row group">
-                  <div className={`text-white p-6 flex flex-col justify-center items-center w-full md:w-36 shrink-0 ${isFull ? 'bg-slate-400' : 'bg-gradient-to-br from-teal-400 to-teal-600'}`}>
-                    <span className="text-2xl font-bold font-heading">{format(parseISO(event.date), 'M/d', { locale: ja })}</span>
-                    <span className="text-sm opacity-90 font-medium">({format(parseISO(event.date), 'E', { locale: ja })})</span>
-                    <div className="mt-3 text-xs uppercase font-bold tracking-wider px-3 py-1 bg-white/20 rounded-full backdrop-blur-sm">
-                      {event.type === EventType.ZOOM ? 'Zoom' : '対面'}
-                    </div>
-                  </div>
-
-                  <div className="p-8 flex-grow">
-                    <div className="flex justify-between items-start mb-3">
-                      <h3 className="text-xl font-bold text-slate-800 font-heading group-hover:text-teal-600 transition-colors">{event.title}</h3>
-                      {isFull && <span className="text-xs font-bold bg-red-100 text-red-500 px-3 py-1 rounded-full">満席</span>}
-                    </div>
-
-                    <p className="text-slate-600 mb-6 text-sm leading-relaxed">{event.description}</p>
-
-                    <div className="flex flex-wrap gap-6 text-sm text-slate-500 mb-8">
-                      <div className="flex items-center">
-                        <Clock className="w-4 h-4 mr-2 text-teal-400" />
-                        {event.startTime} - {event.endTime}
-                      </div>
-                      <div className="flex items-center">
-                        {event.type === EventType.ZOOM ? <Monitor className="w-4 h-4 mr-2 text-blue-400" /> : <MapPin className="w-4 h-4 mr-2 text-teal-400" />}
-                        {event.type === EventType.ZOOM ? 'オンライン (Zoom)' : event.location || '場所詳細はお申し込み後'}
-                      </div>
-                      <div className="flex items-center font-bold text-teal-600 text-base">
-                        ¥{event.price.toLocaleString()}
-                      </div>
-                      <div className={`flex items-center font-bold ${isFull ? 'text-red-400' : 'text-teal-500'}`}>
-                        <Users className="w-4 h-4 mr-2" />
-                        {isFull ? 'キャンセル待ち' : `残席 ${remaining}名`}
+                <Card key={event.id} className="overflow-hidden hover:shadow-lg transition-all duration-300 border-none bg-white/80 backdrop-blur group">
+                  <CardContent className="p-0 flex flex-col md:flex-row">
+                    <div className={`p-6 flex flex-col justify-center items-center w-full md:w-36 shrink-0 text-white ${isFull ? 'bg-slate-400' : 'bg-gradient-to-br from-teal-400 to-teal-600'}`}>
+                      <span className="text-2xl font-bold font-heading">{format(parseISO(event.date), 'M/d', { locale: ja })}</span>
+                      <span className="text-sm opacity-90 font-medium">({format(parseISO(event.date), 'E', { locale: ja })})</span>
+                      <div className="mt-3 text-[10px] uppercase font-bold tracking-wider px-2 py-0.5 bg-white/20 rounded-full backdrop-blur-sm">
+                        {event.type === EventType.ZOOM ? 'Zoom' : '対面'}
                       </div>
                     </div>
 
-                    <button
-                      onClick={() => handleBookClick(event)}
-                      disabled={isFull}
-                      className={`inline-flex items-center px-8 py-3 text-sm font-medium rounded-full transition-all shadow-sm hover:shadow-lg transform hover:-translate-y-0.5 ${isFull ? 'bg-slate-200 text-slate-400 cursor-not-allowed' : 'bg-gradient-to-r from-slate-800 to-slate-900 text-white hover:from-slate-700 hover:to-slate-800'}`}
-                    >
-                      {isFull ? '満席' : '申し込む'}
-                    </button>
-                  </div>
-                </div>
+                    <div className="p-6 md:p-8 flex-grow">
+                      <div className="flex justify-between items-start mb-3">
+                        <h3 className="text-xl font-bold text-slate-800 font-heading group-hover:text-teal-600 transition-colors">{event.title}</h3>
+                        {isFull && <span className="text-xs font-bold bg-red-100 text-red-500 px-3 py-1 rounded-full border border-red-200">満席</span>}
+                      </div>
+
+                      <p className="text-slate-600 mb-6 text-sm leading-relaxed">{event.description}</p>
+
+                      <div className="flex flex-wrap gap-6 text-sm text-slate-500 mb-8">
+                        <div className="flex items-center">
+                          <Clock className="w-4 h-4 mr-2 text-teal-400" />
+                          {event.startTime} - {event.endTime}
+                        </div>
+                        <div className="flex items-center">
+                          {event.type === EventType.ZOOM ? <Monitor className="w-4 h-4 mr-2 text-blue-400" /> : <MapPin className="w-4 h-4 mr-2 text-teal-400" />}
+                          {event.type === EventType.ZOOM ? 'オンライン (Zoom)' : event.location || '場所詳細はお申し込み後'}
+                        </div>
+                        <div className="flex items-center font-bold text-teal-600 text-base">
+                          ¥{event.price.toLocaleString()}
+                        </div>
+                        <div className={`flex items-center font-bold ${isFull ? 'text-red-400' : 'text-teal-500'}`}>
+                          <Users className="w-4 h-4 mr-2" />
+                          {isFull ? 'キャンセル待ち' : `残席 ${remaining}名`}
+                        </div>
+                      </div>
+
+                      <Button
+                        onClick={() => handleBookClick(event)}
+                        disabled={isFull}
+                        className={`rounded-full px-8 h-10 ${isFull ? 'bg-slate-200 text-slate-400 hover:bg-slate-200 cursor-not-allowed' : 'bg-slate-800 text-white hover:bg-slate-700 shadow-md'}`}
+                      >
+                        {isFull ? '満席' : '申し込む'}
+                      </Button>
+                    </div>
+                  </CardContent>
+                </Card>
               );
             })
           )}
@@ -205,272 +220,190 @@ export const Schedule: React.FC = () => {
       </div>
 
       {/* Booking Modal */}
-      {selectedEvent && (
-        <PayPalScriptProvider options={{ clientId: PAYPAL_CLIENT_ID, currency: "JPY" }}>
-          <div className="fixed inset-0 z-50 overflow-y-auto" aria-labelledby="modal-title" role="dialog" aria-modal="true">
-            <div className="flex items-center justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:block sm:p-0">
-              <div className="fixed inset-0 bg-slate-900 bg-opacity-75 transition-opacity" onClick={() => setSelectedEvent(null)}></div>
+      <Dialog open={!!selectedEvent} onOpenChange={(open) => { if (!open) setSelectedEvent(null); }}>
+        <DialogContent className="sm:max-w-lg max-h-[90vh] overflow-y-auto">
+          <PayPalScriptProvider options={{ clientId: PAYPAL_CLIENT_ID, currency: "JPY" }}>
+            <DialogHeader>
+              <DialogTitle className="text-xl font-bold text-slate-900">
+                {submitSuccess ? "お申し込み完了" : "体験会へのお申し込み"}
+              </DialogTitle>
+              {selectedEvent && !submitSuccess && (
+                <DialogDescription>
+                  {selectedEvent.title} <br />
+                  {format(parseISO(selectedEvent.date), 'yyyy年M月d日', { locale: ja })} {selectedEvent.startTime}-{selectedEvent.endTime}
+                  <br />
+                  <span className="font-bold text-slate-800">参加費: ¥{selectedEvent.price.toLocaleString()}</span>
+                </DialogDescription>
+              )}
+            </DialogHeader>
 
-              <div className="inline-block align-bottom bg-white rounded-2xl text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-lg w-full">
-                <div className="bg-white px-4 pt-5 pb-4 sm:p-6 sm:pb-4">
-                  <div className="sm:flex sm:items-start">
-                    <div className="w-full">
-                      {submitSuccess ? (
-                        <div className="text-center py-8">
-                          <div className="mx-auto flex items-center justify-center h-16 w-16 rounded-full bg-green-100 mb-6">
-                            <CheckCircle className="h-10 w-10 text-green-600" />
-                          </div>
-                          <h3 className="text-xl leading-6 font-medium text-slate-900" id="modal-title">
-                            お申し込み完了
-                          </h3>
-                          <p className="mt-4 text-sm text-slate-500">
-                            お申し込みありがとうございます。<br />
-                            手続き完了メールをお送りしましたのでご確認ください。
-                          </p>
-                          <div className="mt-8">
-                            <button
-                              type="button"
-                              className="w-full inline-flex justify-center rounded-md border border-transparent shadow-sm px-4 py-2 bg-teal-600 text-base font-medium text-white hover:bg-teal-700 sm:text-sm"
-                              onClick={() => setSelectedEvent(null)}
-                            >
-                              閉じる
-                            </button>
-                          </div>
-                        </div>
-                      ) : (
-                        <>
-                          <h3 className="text-xl leading-6 font-bold text-slate-900 mb-2" id="modal-title">
-                            体験会へのお申し込み
-                          </h3>
-                          <p className="text-sm text-slate-500 mb-6">
-                            {selectedEvent.title} <br />
-                            {format(parseISO(selectedEvent.date), 'yyyy年M月d日', { locale: ja })} {selectedEvent.startTime}-{selectedEvent.endTime}
-                            <br />
-                            <span className="font-bold text-slate-800">参加費: ¥{selectedEvent.price.toLocaleString()}</span>
-                          </p>
-
-                          <form onSubmit={handleManualSubmit} className="space-y-4">
-                            <div>
-                              <label htmlFor="name" className="block text-sm font-medium text-slate-700">お名前</label>
-                              <input
-                                type="text"
-                                name="name"
-                                id="name"
-                                required
-                                className="mt-1 block w-full border border-slate-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-teal-500 focus:border-teal-500 sm:text-sm"
-                                value={formData.name}
-                                onChange={handleFormChange}
-                              />
-                            </div>
-
-                            {/* New Fields */}
-                            <div className="grid grid-cols-2 gap-4">
-                              <div>
-                                <label htmlFor="dob" className="block text-sm font-medium text-slate-700">生年月日</label>
-                                <input
-                                  type="date"
-                                  name="dob"
-                                  id="dob"
-                                  required
-                                  className="mt-1 block w-full border border-slate-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-teal-500 focus:border-teal-500 sm:text-sm"
-                                  value={formData.dob}
-                                  onChange={handleFormChange}
-                                />
-                              </div>
-                              <div>
-                                <label htmlFor="prefecture" className="block text-sm font-medium text-slate-700">都道府県</label>
-                                <select
-                                  name="prefecture"
-                                  id="prefecture"
-                                  required
-                                  className="mt-1 block w-full border border-slate-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-teal-500 focus:border-teal-500 sm:text-sm"
-                                  value={formData.prefecture}
-                                  onChange={handleFormChange}
-                                >
-                                  <option value="">選択してください</option>
-                                  {PREFECTURES.map(pref => (
-                                    <option key={pref} value={pref}>{pref}</option>
-                                  ))}
-                                </select>
-                              </div>
-                            </div>
-
-                            <div>
-                              <label htmlFor="email" className="block text-sm font-medium text-slate-700">メールアドレス</label>
-                              <input
-                                type="email"
-                                name="email"
-                                id="email"
-                                required
-                                className="mt-1 block w-full border border-slate-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-teal-500 focus:border-teal-500 sm:text-sm"
-                                value={formData.email}
-                                onChange={handleFormChange}
-                              />
-                            </div>
-                            <div>
-                              <label htmlFor="phone" className="block text-sm font-medium text-slate-700">電話番号</label>
-                              <input
-                                type="tel"
-                                name="phone"
-                                id="phone"
-                                required
-                                className="mt-1 block w-full border border-slate-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-teal-500 focus:border-teal-500 sm:text-sm"
-                                value={formData.phone}
-                                onChange={handleFormChange}
-                              />
-                            </div>
-
-                            {/* Payment Method Selection */}
-                            <div className="pt-2">
-                              <label className="block text-sm font-medium text-slate-700 mb-2">お支払い方法</label>
-                              <div className="space-y-2">
-                                <label className="flex items-center cursor-pointer">
-                                  <input
-                                    type="radio"
-                                    name="paymentMethod"
-                                    value="paypal"
-                                    checked={formData.paymentMethod === 'paypal'}
-                                    onChange={handleFormChange}
-                                    className="h-4 w-4 text-teal-600 focus:ring-teal-500 border-gray-300"
-                                  />
-                                  <span className="ml-2 text-sm text-slate-700">PayPal (クレジットカード)</span>
-                                </label>
-                                <label className="flex items-center cursor-pointer">
-                                  <input
-                                    type="radio"
-                                    name="paymentMethod"
-                                    value="paypay"
-                                    checked={formData.paymentMethod === 'paypay'}
-                                    onChange={handleFormChange}
-                                    className="h-4 w-4 text-teal-600 focus:ring-teal-500 border-gray-300"
-                                  />
-                                  <span className="ml-2 text-sm text-slate-700">PayPay</span>
-                                </label>
-                                <label className="flex items-center cursor-pointer">
-                                  <input
-                                    type="radio"
-                                    name="paymentMethod"
-                                    value="bank_transfer"
-                                    checked={formData.paymentMethod === 'bank_transfer'}
-                                    onChange={handleFormChange}
-                                    className="h-4 w-4 text-teal-600 focus:ring-teal-500 border-gray-300"
-                                  />
-                                  <span className="ml-2 text-sm text-slate-700">銀行振込</span>
-                                </label>
-                              </div>
-                            </div>
-
-                            {paymentError && (
-                              <div className="p-3 bg-red-50 text-red-600 text-sm rounded border border-red-200">
-                                <p className="font-bold">決済エラー</p>
-                                {paymentError}
-                              </div>
-                            )}
-
-                            <div className="mt-8 border-t pt-4">
-                              {!isFormValid ? (
-                                <div className="text-center p-4 bg-slate-50 rounded text-slate-500 text-sm mb-4">
-                                  全ての必須項目を入力してください
-                                </div>
-                              ) : (
-                                <>
-                                  {formData.paymentMethod === 'paypal' && (
-                                    <div className="space-y-3">
-                                      <p className="text-center text-sm text-slate-500 mb-2">PayPalでお支払い</p>
-                                      <div className="relative z-0">
-                                        <PayPalButtons
-                                          style={{ layout: "vertical", shape: "rect", label: "pay" }}
-                                          createOrder={(data, actions) => {
-                                            return actions.order.create({
-                                              purchase_units: [
-                                                {
-                                                  description: selectedEvent.title,
-                                                  amount: {
-                                                    value: selectedEvent.price.toString(),
-                                                    currency_code: "JPY"
-                                                  },
-                                                },
-                                              ],
-                                              intent: "CAPTURE"
-                                            });
-                                          }}
-                                          onApprove={async (data, actions) => {
-                                            if (actions.order) {
-                                              const details = await actions.order.capture();
-                                              handlePaymentSuccess(details);
-                                            }
-                                          }}
-                                          onError={(err) => {
-                                            console.error("PayPal Error:", err);
-                                            setPaymentError("決済処理中にエラーが発生しました。");
-                                          }}
-                                        />
-                                      </div>
-                                    </div>
-                                  )}
-
-                                  {formData.paymentMethod === 'paypay' && (
-                                    <div className="space-y-4">
-                                      <div className="bg-slate-50 p-4 rounded text-sm text-slate-700">
-                                        <p className="font-bold mb-2">PayPayでのお支払い</p>
-                                        <p>以下のID宛に送金をお願いいたします。</p>
-                                        <p className="my-2 font-mono bg-white p-2 rounded border">ID: theta-demo-user</p>
-                                        <p className="text-xs text-slate-500">※送金完了後、下のボタンを押して予約を確定してください。</p>
-                                      </div>
-                                      <button
-                                        type="submit"
-                                        disabled={isSubmitting}
-                                        className="w-full inline-flex justify-center rounded-md border border-transparent shadow-sm px-4 py-3 bg-teal-600 text-base font-medium text-white hover:bg-teal-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-teal-500 sm:text-sm disabled:opacity-50"
-                                      >
-                                        {isSubmitting ? '処理中...' : '送金しました（予約確定）'}
-                                      </button>
-                                    </div>
-                                  )}
-
-                                  {formData.paymentMethod === 'bank_transfer' && (
-                                    <div className="space-y-4">
-                                      <div className="bg-slate-50 p-4 rounded text-sm text-slate-700">
-                                        <p className="font-bold mb-2">銀行振込</p>
-                                        <p>以下へのお振込みをお願いいたします。</p>
-                                        <ul className="list-disc list-inside my-2 space-y-1">
-                                          <li>銀行名: ○○銀行</li>
-                                          <li>支店名: ○○支店</li>
-                                          <li>口座: 普通 1234567</li>
-                                          <li>名義: シータヒーリングジム</li>
-                                        </ul>
-                                        <p className="text-xs text-slate-500">※お振込み後、下のボタンを押して予約を確定してください。</p>
-                                      </div>
-                                      <button
-                                        type="submit"
-                                        disabled={isSubmitting}
-                                        className="w-full inline-flex justify-center rounded-md border border-transparent shadow-sm px-4 py-3 bg-teal-600 text-base font-medium text-white hover:bg-teal-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-teal-500 sm:text-sm disabled:opacity-50"
-                                      >
-                                        {isSubmitting ? '処理中...' : '振込依頼完了（予約確定）'}
-                                      </button>
-                                    </div>
-                                  )}
-                                </>
-                              )}
-                            </div>
-
-                            <button
-                              type="button"
-                              className="mt-2 w-full inline-flex justify-center rounded-md border border-slate-300 shadow-sm px-4 py-2 bg-white text-base font-medium text-slate-700 hover:bg-slate-50 sm:text-sm"
-                              onClick={() => setSelectedEvent(null)}
-                            >
-                              キャンセル
-                            </button>
-                          </form>
-                        </>
-                      )}
-                    </div>
-                  </div>
+            {submitSuccess ? (
+              <div className="text-center py-8">
+                <div className="mx-auto flex items-center justify-center h-16 w-16 rounded-full bg-green-100 mb-6">
+                  <CheckCircle className="h-10 w-10 text-green-600" />
+                </div>
+                <p className="mt-4 text-sm text-slate-500">
+                  お申し込みありがとうございます。<br />
+                  手続き完了メールをお送りしましたのでご確認ください。
+                </p>
+                <div className="mt-8">
+                  <Button className="w-full bg-teal-600 hover:bg-teal-700" onClick={() => setSelectedEvent(null)}>
+                    閉じる
+                  </Button>
                 </div>
               </div>
-            </div>
-          </div>
-        </PayPalScriptProvider>
-      )}
+            ) : (
+              selectedEvent && (
+                <form onSubmit={handleManualSubmit} className="space-y-4">
+                  <div className="space-y-2">
+                    <Label htmlFor="name">お名前</Label>
+                    <Input id="name" name="name" required value={formData.name} onChange={handleFormChange} placeholder="山田 太郎" />
+                  </div>
+
+                  <div className="grid grid-cols-2 gap-4">
+                    <div className="space-y-2">
+                      <Label htmlFor="dob">生年月日</Label>
+                      <Input id="dob" name="dob" type="date" required value={formData.dob} onChange={handleFormChange} />
+                    </div>
+                    <div className="space-y-2">
+                      <Label htmlFor="prefecture">都道府県</Label>
+                      <Select name="prefecture" value={formData.prefecture} onValueChange={(val) => handleValueChange('prefecture', val)}>
+                        <SelectTrigger>
+                          <SelectValue placeholder="選択" />
+                        </SelectTrigger>
+                        <SelectContent className="max-h-60">
+                          {PREFECTURES.map(pref => (
+                            <SelectItem key={pref} value={pref}>{pref}</SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                    </div>
+                  </div>
+
+                  <div className="space-y-2">
+                    <Label htmlFor="email">メールアドレス</Label>
+                    <Input id="email" name="email" type="email" required value={formData.email} onChange={handleFormChange} placeholder="example@email.com" />
+                  </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="phone">電話番号</Label>
+                    <Input id="phone" name="phone" type="tel" required value={formData.phone} onChange={handleFormChange} placeholder="090-1234-5678" />
+                  </div>
+
+                  {/* Payment Method Selection */}
+                  <div className="space-y-3 pt-2">
+                    <Label>お支払い方法</Label>
+                    <RadioGroup value={formData.paymentMethod} onValueChange={(val) => handleValueChange('paymentMethod', val)} className="flex flex-col space-y-1">
+                      <div className="flex items-center space-x-2">
+                        <RadioGroupItem value="paypal" id="paypal" />
+                        <Label htmlFor="paypal" className="font-normal cursor-pointer">PayPal (クレジットカード)</Label>
+                      </div>
+                      <div className="flex items-center space-x-2">
+                        <RadioGroupItem value="paypay" id="paypay" />
+                        <Label htmlFor="paypay" className="font-normal cursor-pointer">PayPay</Label>
+                      </div>
+                      <div className="flex items-center space-x-2">
+                        <RadioGroupItem value="bank_transfer" id="bank_transfer" />
+                        <Label htmlFor="bank_transfer" className="font-normal cursor-pointer">銀行振込</Label>
+                      </div>
+                    </RadioGroup>
+                  </div>
+
+                  {paymentError && (
+                    <div className="p-3 bg-red-50 text-red-600 text-sm rounded border border-red-200 flex items-center gap-2">
+                      <AlertCircle className="w-4 h-4" />
+                      <div>
+                        <p className="font-bold text-xs">エラー</p>
+                        {paymentError}
+                      </div>
+                    </div>
+                  )}
+
+                  <div className="pt-4 border-t">
+                    {!isFormValid ? (
+                      <div className="text-center p-3 bg-slate-50 rounded text-slate-500 text-xs mb-4">
+                        全ての必須項目を入力してください
+                      </div>
+                    ) : (
+                      <>
+                        {formData.paymentMethod === 'paypal' && (
+                          <div className="space-y-3">
+                            <p className="text-center text-xs text-slate-500 mb-2">PayPalでお支払い</p>
+                            <div className="relative z-0">
+                              <PayPalButtons
+                                style={{ layout: "vertical", shape: "rect", label: "pay" }}
+                                createOrder={(data, actions) => {
+                                  return actions.order.create({
+                                    purchase_units: [
+                                      {
+                                        description: selectedEvent.title,
+                                        amount: {
+                                          value: selectedEvent.price.toString(),
+                                          currency_code: "JPY"
+                                        },
+                                      },
+                                    ],
+                                    intent: "CAPTURE"
+                                  });
+                                }}
+                                onApprove={async (data, actions) => {
+                                  if (actions.order) {
+                                    const details = await actions.order.capture();
+                                    handlePaymentSuccess(details);
+                                  }
+                                }}
+                                onError={(err) => {
+                                  console.error("PayPal Error:", err);
+                                  setPaymentError("決済処理中にエラーが発生しました。");
+                                }}
+                              />
+                            </div>
+                          </div>
+                        )}
+
+                        {formData.paymentMethod === 'paypay' && (
+                          <div className="space-y-4">
+                            <div className="bg-slate-50 p-4 rounded text-sm text-slate-700">
+                              <p className="font-bold mb-2">PayPayでのお支払い</p>
+                              <p>以下のID宛に送金をお願いいたします。</p>
+                              <p className="my-2 font-mono bg-white p-2 rounded border text-center select-all">ID: theta-demo-user</p>
+                              <p className="text-xs text-slate-500">※送金完了後、下のボタンを押して予約を確定してください。</p>
+                            </div>
+                            <Button type="submit" disabled={isSubmitting} className="w-full bg-teal-600 hover:bg-teal-700">
+                              {isSubmitting ? '処理中...' : '送金しました（予約確定）'}
+                            </Button>
+                          </div>
+                        )}
+
+                        {formData.paymentMethod === 'bank_transfer' && (
+                          <div className="space-y-4">
+                            <div className="bg-slate-50 p-4 rounded text-sm text-slate-700">
+                              <p className="font-bold mb-2">銀行振込</p>
+                              <p>以下へのお振込みをお願いいたします。</p>
+                              <ul className="list-disc list-inside my-2 space-y-1 text-xs">
+                                <li>銀行名: ○○銀行</li>
+                                <li>支店名: ○○支店</li>
+                                <li>口座: 普通 1234567</li>
+                                <li>名義: シータヒーリングジム</li>
+                              </ul>
+                              <p className="text-xs text-slate-500">※お振込み後、下のボタンを押して予約を確定してください。</p>
+                            </div>
+                            <Button type="submit" disabled={isSubmitting} className="w-full bg-teal-600 hover:bg-teal-700">
+                              {isSubmitting ? '処理中...' : '振込依頼完了（予約確定）'}
+                            </Button>
+                          </div>
+                        )}
+                      </>
+                    )}
+                  </div>
+                  <Button type="button" variant="outline" className="w-full mt-2" onClick={() => setSelectedEvent(null)}>
+                    キャンセル
+                  </Button>
+                </form>
+              )
+            )}
+          </PayPalScriptProvider>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 };
