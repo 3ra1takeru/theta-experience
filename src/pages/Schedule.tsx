@@ -28,15 +28,13 @@ const PREFECTURES = [
   "熊本県", "大分県", "宮崎県", "鹿児島県", "沖縄県"
 ];
 
-// Helper to format time strings that might be full ISO dates (e.g. 1899-12-30T20:00:00.000Z)
 const formatTime = (timeStr: string) => {
   if (!timeStr) return '';
+  // If it's an ISO string (e.g., 1899-12-30T20:00:00.000Z), extract the HH:mm part directly
+  // to avoid timezone shifting (e.g. 20:00Z -> 05:00 JST).
   if (timeStr.includes('T')) {
-    try {
-      return format(parseISO(timeStr), 'HH:mm');
-    } catch (e) {
-      return timeStr;
-    }
+    const timePart = timeStr.split('T')[1];
+    return timePart.substring(0, 5); // "20:00"
   }
   return timeStr;
 };

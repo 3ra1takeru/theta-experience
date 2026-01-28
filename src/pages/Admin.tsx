@@ -37,6 +37,7 @@ export const Admin: React.FC = () => {
   });
   const [sendingEmailId, setSendingEmailId] = useState<string | null>(null);
   const [profileSaving, setProfileSaving] = useState(false);
+  const [isCreating, setIsCreating] = useState(false);
 
   // --- Import States ---
   const [
@@ -100,10 +101,18 @@ export const Admin: React.FC = () => {
   const handleCreateEvent = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!newEvent.title || !newEvent.date) return;
+    if (isCreating) return;
 
-    await api.createEvent(newEvent as Omit<Event, 'id'>);
-    setShowCreateModal(false);
-    loadAllData();
+    setIsCreating(true);
+    try {
+      await api.createEvent(newEvent as Omit<Event, 'id'>);
+      setShowCreateModal(false);
+      loadAllData();
+    } catch (e) {
+      alert('イベント作成に失敗しました');
+    } finally {
+      setIsCreating(false);
+    }
   };
 
   // --- Import Handlers: Events ---
@@ -469,7 +478,16 @@ export const Admin: React.FC = () => {
                                   <Send className="w-4 h-4" />
                                 </Button>
                               )}
-                              <Button variant="outline" size="icon" className="h-8 w-8 text-red-600 border-red-200 hover:bg-red-50" onClick={async () => { if (window.confirm('本当に削除しますか？')) { await api.deleteEvent(event.id); loadAllData(); } }} title="削除">
+                              <Button variant="outline" size="icon" className="h-8 w-8 text-red-600 border-red-200 hover:bg-red-50" onClick={async () => {
+                                if (window.confirm('本当に削除しますか？')) {
+                                  try {
+                                    await api.deleteEvent(event.id);
+                                    loadAllData();
+                                  } catch (e) {
+                                    alert('削除に失敗しました。');
+                                  }
+                                }
+                              }} title="削除">
                                 <Trash2 className="w-4 h-4" />
                               </Button>
                             </div>
@@ -758,7 +776,9 @@ export const Admin: React.FC = () => {
             </div>
             <DialogFooter>
               <Button type="button" variant="ghost" onClick={() => setShowCreateModal(false)}>キャンセル</Button>
-              <Button type="submit">登録する</Button>
+              <Button type="submit" disabled={isCreating}>
+                {isCreating ? '登録中...' : '登録する'}
+              </Button>
             </DialogFooter>
           </form>
         </DialogContent>
