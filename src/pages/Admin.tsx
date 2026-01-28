@@ -12,6 +12,16 @@ import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, D
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { cn } from "@/lib/utils";
 
+// Helper to safely format dates
+const safeFormatDate = (dateStr: string, fmt: string) => {
+  try {
+    if (!dateStr || dateStr.startsWith('#')) return 'Invalid Date';
+    return format(parseISO(dateStr), fmt);
+  } catch (e) {
+    return 'Invalid Date';
+  }
+};
+
 export const Admin: React.FC = () => {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [password, setPassword] = useState('');
@@ -450,14 +460,14 @@ export const Admin: React.FC = () => {
                     </thead>
                     <tbody className="divide-y">
                       {events.map(event => (
-                        <tr key={event.id} className="hover:bg-slate-50/50 transition-colors">
+                        <tr key={event.id} className={cn("hover:bg-slate-50/50 transition-colors", (event.date && event.date.startsWith('#')) && "bg-red-50")}>
                           <td className="p-3 font-mono text-xs text-slate-400">
                             <button onClick={() => copyToClipboard(event.id)} className="hover:text-teal-600 flex items-center gap-1">
                               {event.id.substring(0, 6)}... <Copy className="w-3 h-3" />
                             </button>
                           </td>
                           <td className="p-3">
-                            <div className="font-medium">{format(parseISO(event.date), 'yyyy/MM/dd')}</div>
+                            <div className="font-medium">{safeFormatDate(event.date, 'yyyy/MM/dd')}</div>
                             <div className="text-xs text-slate-500">{event.startTime}</div>
                           </td>
                           <td className="p-3 font-medium text-slate-800">{event.title}</td>

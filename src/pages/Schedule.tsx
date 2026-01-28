@@ -39,6 +39,15 @@ const formatTime = (timeStr: string) => {
   return timeStr;
 };
 
+const safeFormatDate = (dateStr: string, fmt: string, options?: any) => {
+  try {
+    if (!dateStr || dateStr.startsWith('#')) return 'Invalid Date';
+    return format(parseISO(dateStr), fmt, options);
+  } catch (e) {
+    return 'Invalid Date';
+  }
+};
+
 export const Schedule: React.FC = () => {
   const [events, setEvents] = useState<Event[]>([]);
   const [registrations, setRegistrations] = useState<Registration[]>([]);
@@ -167,7 +176,13 @@ export const Schedule: React.FC = () => {
         <div className="space-y-6">
           {events
             .filter(e => showPastEvents ? true : e.status === 'upcoming')
-            .sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime())
+            .sort((a, b) => {
+              const tA = new Date(a.date).getTime();
+              const tB = new Date(b.date).getTime();
+              if (isNaN(tA)) return 1;
+              if (isNaN(tB)) return -1;
+              return tA - tB;
+            })
             .length === 0 ? (
             <div className="text-center py-12 bg-white/50 border border-dashed border-slate-200 rounded-xl">
               <p className="text-slate-500">現在予定されている体験会はありません。</p>
@@ -181,8 +196,8 @@ export const Schedule: React.FC = () => {
                 <Card key={event.id} className="overflow-hidden hover:shadow-lg transition-all duration-300 border-none bg-white/80 backdrop-blur group">
                   <CardContent className="p-0 flex flex-col md:flex-row">
                     <div className={`p-6 flex flex-col justify-center items-center w-full md:w-36 shrink-0 text-white ${isFull ? 'bg-slate-400' : 'bg-gradient-to-br from-teal-400 to-teal-600'}`}>
-                      <span className="text-2xl font-bold font-heading">{format(parseISO(event.date), 'M/d', { locale: ja })}</span>
-                      <span className="text-sm opacity-90 font-medium">({format(parseISO(event.date), 'E', { locale: ja })})</span>
+                      <span className="text-2xl font-bold font-heading">{safeFormatDate(event.date, 'M/d', { locale: ja })}</span>
+                      <span className="text-sm opacity-90 font-medium">({safeFormatDate(event.date, 'E', { locale: ja })})</span>
                       <div className="mt-3 text-[10px] uppercase font-bold tracking-wider px-2 py-0.5 bg-white/20 rounded-full backdrop-blur-sm">
                         {event.type === EventType.ZOOM ? 'Zoom' : '対面'}
                       </div>
@@ -241,7 +256,7 @@ export const Schedule: React.FC = () => {
               {selectedEvent && !submitSuccess && (
                 <DialogDescription>
                   {selectedEvent.title} <br />
-                  {format(parseISO(selectedEvent.date), 'yyyy年M月d日', { locale: ja })} {formatTime(selectedEvent.startTime)}-{formatTime(selectedEvent.endTime)}
+                  {safeFormatDate(selectedEvent.date, 'yyyy年M月d日', { locale: ja })} {formatTime(selectedEvent.startTime)}-{formatTime(selectedEvent.endTime)}
                   <br />
                   <span className="font-bold text-slate-800">参加費: ¥{selectedEvent.price.toLocaleString()}</span>
                 </DialogDescription>
