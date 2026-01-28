@@ -48,6 +48,8 @@ export const Admin: React.FC = () => {
   const [sendingEmailId, setSendingEmailId] = useState<string | null>(null);
   const [profileSaving, setProfileSaving] = useState(false);
   const [isCreating, setIsCreating] = useState(false);
+  const [eventToDelete, setEventToDelete] = useState<Event | null>(null);
+  const [isDeleting, setIsDeleting] = useState(false);
 
   // --- Import States ---
   const [
@@ -122,6 +124,20 @@ export const Admin: React.FC = () => {
       alert('イベント作成に失敗しました');
     } finally {
       setIsCreating(false);
+    }
+  };
+
+  const handleConfirmDelete = async () => {
+    if (!eventToDelete) return;
+    setIsDeleting(true);
+    try {
+      await api.deleteEvent(eventToDelete.id);
+      loadAllData();
+      setEventToDelete(null);
+    } catch (e) {
+      alert('削除に失敗しました。');
+    } finally {
+      setIsDeleting(false);
     }
   };
 
@@ -488,16 +504,7 @@ export const Admin: React.FC = () => {
                                   <Send className="w-4 h-4" />
                                 </Button>
                               )}
-                              <Button variant="outline" size="icon" className="h-8 w-8 text-red-600 border-red-200 hover:bg-red-50" onClick={async () => {
-                                if (window.confirm('本当に削除しますか？')) {
-                                  try {
-                                    await api.deleteEvent(event.id);
-                                    loadAllData();
-                                  } catch (e) {
-                                    alert('削除に失敗しました。');
-                                  }
-                                }
-                              }} title="削除">
+                              <Button variant="outline" size="icon" className="h-8 w-8 text-red-600 border-red-200 hover:bg-red-50" onClick={() => setEventToDelete(event)} title="削除">
                                 <Trash2 className="w-4 h-4" />
                               </Button>
                             </div>
@@ -791,6 +798,27 @@ export const Admin: React.FC = () => {
               </Button>
             </DialogFooter>
           </form>
+        </DialogContent>
+      </Dialog>
+
+      <Dialog open={!!eventToDelete} onOpenChange={(open) => !open && setEventToDelete(null)}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>イベント削除の確認</DialogTitle>
+            <DialogDescription>
+              以下のイベントを本当に削除しますか？<br />
+              <span className="font-bold text-slate-800 my-2 block">
+                {eventToDelete?.title} ({safeFormatDate(eventToDelete?.date || '', 'yyyy/MM/dd')})
+              </span>
+              この操作は取り消せません。
+            </DialogDescription>
+          </DialogHeader>
+          <DialogFooter>
+            <Button variant="ghost" onClick={() => setEventToDelete(null)}>キャンセル</Button>
+            <Button variant="destructive" onClick={handleConfirmDelete} disabled={isDeleting} className="bg-red-600 hover:bg-red-700 text-white">
+              {isDeleting ? '削除中...' : '削除する'}
+            </Button>
+          </DialogFooter>
         </DialogContent>
       </Dialog>
 
