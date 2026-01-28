@@ -317,7 +317,7 @@ export const Admin: React.FC = () => {
               <div className="space-y-2">
                 <Input
                   type="password"
-                  placeholder="パスワード (admin123)"
+                  placeholder="パスワード"
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                 />
