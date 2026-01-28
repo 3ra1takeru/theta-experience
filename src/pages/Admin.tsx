@@ -500,11 +500,11 @@ export const Admin: React.FC = () => {
                           <td className="p-3 text-center">
                             <div className="flex items-center justify-center gap-2">
                               {event.status !== 'upcoming' && (
-                                <Button variant="outline" size="icon" className="h-8 w-8 text-purple-600 border-purple-200 hover:bg-purple-50" onClick={() => handleSendSurvey(event.id)} disabled={sendingEmailId === event.id} title="アンケート送信">
+                                <Button type="button" variant="outline" size="icon" className="h-8 w-8 text-purple-600 border-purple-200 hover:bg-purple-50" onClick={() => handleSendSurvey(event.id)} disabled={sendingEmailId === event.id} title="アンケート送信">
                                   <Send className="w-4 h-4" />
                                 </Button>
                               )}
-                              <Button variant="outline" size="icon" className="h-8 w-8 text-red-600 border-red-200 hover:bg-red-50" onClick={() => setEventToDelete(event)} title="削除">
+                              <Button type="button" variant="outline" size="icon" className="h-8 w-8 text-red-600 border-red-200 hover:bg-red-50" onClick={() => setEventToDelete(event)} title="削除">
                                 <Trash2 className="w-4 h-4" />
                               </Button>
                             </div>
