@@ -1,6 +1,6 @@
 import { Event, Registration, Feedback, InstructorProfile } from '../types';
 
-const API_URL = 'https://script.google.com/macros/s/AKfycbzt4coLq2cS1v2566Mnma2AapNHx_XeAGhB2az73gA3-TMp5H7qJDrfa-s1qztwXiOm/exec';
+const API_URL = 'https://script.google.com/macros/s/AKfycbxuUnhUnr1zfeIzfsYg_KR2eem7Rxy7-Y1lTcJz6SR8bQqIq7H6YYFR62TjLkzGnVS1/exec';
 
 // Helper to call GAS API
 async function callApi<T>(action: string, method: 'GET' | 'POST' = 'GET', body?: any): Promise<T> {
