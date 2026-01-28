@@ -13,7 +13,7 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/com
 import { cn } from "@/lib/utils";
 
 export const Admin: React.FC = () => {
-  const [isAuthenticated, setIsAuthenticated] = useState(true);
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
   // const [password, setPassword] = useState('');
 
   // Tab State
