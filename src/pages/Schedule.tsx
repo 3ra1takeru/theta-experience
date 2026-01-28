@@ -28,6 +28,19 @@ const PREFECTURES = [
   "熊本県", "大分県", "宮崎県", "鹿児島県", "沖縄県"
 ];
 
+// Helper to format time strings that might be full ISO dates (e.g. 1899-12-30T20:00:00.000Z)
+const formatTime = (timeStr: string) => {
+  if (!timeStr) return '';
+  if (timeStr.includes('T')) {
+    try {
+      return format(parseISO(timeStr), 'HH:mm');
+    } catch (e) {
+      return timeStr;
+    }
+  }
+  return timeStr;
+};
+
 export const Schedule: React.FC = () => {
   const [events, setEvents] = useState<Event[]>([]);
   const [registrations, setRegistrations] = useState<Registration[]>([]);
@@ -188,7 +201,7 @@ export const Schedule: React.FC = () => {
                       <div className="flex flex-wrap gap-6 text-sm text-slate-500 mb-8">
                         <div className="flex items-center">
                           <Clock className="w-4 h-4 mr-2 text-teal-400" />
-                          {event.startTime} - {event.endTime}
+                          {formatTime(event.startTime)} - {formatTime(event.endTime)}
                         </div>
                         <div className="flex items-center">
                           {event.type === EventType.ZOOM ? <Monitor className="w-4 h-4 mr-2 text-blue-400" /> : <MapPin className="w-4 h-4 mr-2 text-teal-400" />}
@@ -230,7 +243,7 @@ export const Schedule: React.FC = () => {
               {selectedEvent && !submitSuccess && (
                 <DialogDescription>
                   {selectedEvent.title} <br />
-                  {format(parseISO(selectedEvent.date), 'yyyy年M月d日', { locale: ja })} {selectedEvent.startTime}-{selectedEvent.endTime}
+                  {format(parseISO(selectedEvent.date), 'yyyy年M月d日', { locale: ja })} {formatTime(selectedEvent.startTime)}-{formatTime(selectedEvent.endTime)}
                   <br />
                   <span className="font-bold text-slate-800">参加費: ¥{selectedEvent.price.toLocaleString()}</span>
                 </DialogDescription>
