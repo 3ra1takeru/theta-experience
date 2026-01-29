@@ -39,6 +39,14 @@ export const Home: React.FC = () => {
     load();
   }, []);
 
+  const formatTime = (timeStr: string) => {
+    if (!timeStr) return '';
+    if (timeStr.includes('T')) {
+      return timeStr.split('T')[1].substring(0, 5);
+    }
+    return timeStr;
+  };
+
   const getRemainingSeats = (eventId: string, capacity: number) => {
     const count = registrations.filter(r => r.eventId === eventId && r.status === 'confirmed').length;
     return Math.max(0, capacity - count);
@@ -207,7 +215,7 @@ export const Home: React.FC = () => {
                             {isFull && <div className="text-[10px] font-bold bg-red-100 text-red-500 px-2 py-1 rounded border border-red-200 uppercase tracking-wide">FULL</div>}
                           </div>
                           <div className="flex flex-wrap justify-center md:justify-start gap-x-6 gap-y-2 text-sm text-slate-500">
-                            <div className="flex items-center"><Clock className="w-4 h-4 mr-1.5 text-teal-400" /> {event.startTime} - {event.endTime}</div>
+                            <div className="flex items-center"><Clock className="w-4 h-4 mr-1.5 text-teal-400" /> {formatTime(event.startTime)} - {formatTime(event.endTime)}</div>
                             <div className="flex items-center">
                               {event.type === EventType.ZOOM ? <Monitor className="w-4 h-4 mr-1.5 text-blue-400" /> : <MapPin className="w-4 h-4 mr-1.5 text-teal-400" />}
                               {event.type}
