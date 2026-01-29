@@ -289,7 +289,7 @@ export const Schedule: React.FC = () => {
                   <div className="grid grid-cols-2 gap-4">
                     <div className="space-y-2">
                       <Label htmlFor="dob">生年月日</Label>
-                      <Input id="dob" name="dob" type="date" required value={formData.dob} onChange={handleFormChange} />
+                      <Input id="dob" name="dob" type="date" max="9999-12-31" required value={formData.dob} onChange={handleFormChange} />
                     </div>
                     <div className="space-y-2">
                       <Label htmlFor="prefecture">都道府県</Label>

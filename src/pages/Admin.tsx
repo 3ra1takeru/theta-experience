@@ -762,7 +762,7 @@ export const Admin: React.FC = () => {
             <div className="grid grid-cols-2 gap-4">
               <div className="space-y-2">
                 <Label>日付</Label>
-                <Input type="date" required onChange={e => setNewEvent({ ...newEvent, date: new Date(e.target.value).toISOString() })} />
+                <Input type="date" max="9999-12-31" required onChange={e => setNewEvent({ ...newEvent, date: new Date(e.target.value).toISOString() })} />
               </div>
               <div className="space-y-2">
                 <Label>形式</Label>
@@ -843,7 +843,7 @@ export const Admin: React.FC = () => {
               <div className="grid grid-cols-2 gap-4">
                 <div>
                   <Label>日付</Label>
-                  <Input type="date" required value={singleEventInput.date ? format(new Date(singleEventInput.date), 'yyyy-MM-dd') : ''} onChange={e => setSingleEventInput({ ...singleEventInput, date: new Date(e.target.value).toISOString() })} />
+                  <Input type="date" max="9999-12-31" required value={singleEventInput.date ? format(new Date(singleEventInput.date), 'yyyy-MM-dd') : ''} onChange={e => setSingleEventInput({ ...singleEventInput, date: new Date(e.target.value).toISOString() })} />
                 </div>
                 <div>
                   <Label>ステータス</Label>
