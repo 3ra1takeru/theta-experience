@@ -14,6 +14,8 @@ function doPost(e) {
     return handleRequest(e);
 }
 
+
+
 function handleRequest(e) {
     const lock = LockService.getScriptLock();
     // Wait up to 30 seconds for other concurrent executions to finish.
@@ -124,7 +126,10 @@ function createEvent(data) {
         location: data.location || '',
         capacity: data.capacity || 5,
         price: data.price || 0,
-        status: 'upcoming'
+        status: 'upcoming',
+        prefecture: data.prefecture || '',
+        address: data.address || '',
+        mapUrl: data.mapUrl || ''
     };
 
     addToSheet(SHEET_NAMES.EVENTS, newEvent);
@@ -136,9 +141,26 @@ function createEvent(data) {
         const endDateTime = new Date(newEvent.date.split('T')[0] + 'T' + newEvent.endTime + ':00');
 
         if (!isNaN(startDateTime.getTime()) && !isNaN(endDateTime.getTime())) {
-            calendar.createEvent(newEvent.title, startDateTime, endDateTime, {
-                description: newEvent.description,
-                location: newEvent.type === '対面' ? newEvent.location : 'Zoom'
+            let titlePrefix = '';
+            let location = newEvent.location;
+
+            if (newEvent.type === 'Zoom') {
+                titlePrefix = '[Zoom] ';
+                location = 'Zoom';
+            } else if (newEvent.type === '対面') {
+                const pref = newEvent.prefecture || '現地';
+                titlePrefix = `[${pref}] `;
+                // Combine address and location name for Calendar location field
+                location = `${newEvent.address || ''} ${newEvent.location || ''}`.trim();
+            }
+
+            const calendarTitle = titlePrefix + newEvent.title;
+            const description = newEvent.description +
+                (newEvent.mapUrl ? `\n\nGoogle Map: ${newEvent.mapUrl}` : '');
+
+            calendar.createEvent(calendarTitle, startDateTime, endDateTime, {
+                description: description,
+                location: location
             });
         }
     } catch (e) {
@@ -178,7 +200,67 @@ function createRegistration(data) {
         paymentMethod: data.paymentMethod || ''
     };
     addToSheet(SHEET_NAMES.REGISTRATIONS, newReg);
+
+    // Send Confirmation Email
+    try {
+        const events = getEvents();
+        const event = events.find(e => e.id === data.eventId);
+        if (event) {
+            sendConfirmationEmail(newReg, event);
+        }
+    } catch (e) {
+        console.error("Failed to send email: " + e.toString());
+    }
+
     return newReg;
+}
+
+function sendConfirmationEmail(reg, event) {
+    const paymentSettings = getPaymentSettings();
+
+    let subject = `【予約完了】${event.title} へのお申し込みありがとうございます`;
+    let body = `${reg.applicantName} 様\n\n` +
+        `この度は「${event.title}」にお申し込みいただき、誠にありがとうございます。\n` +
+        `以下の内容で予約を承りました。\n\n` +
+        `■ご予約内容\n` +
+        `イベント名: ${event.title}\n` +
+        `日時: ${event.date.split('T')[0]} ${event.startTime} - ${event.endTime}\n` +
+        `場所: ${event.type === 'Zoom' ? 'オンライン (Zoom)' : event.location}\n` +
+        `参加費: ¥${Number(event.price).toLocaleString()}\n\n`;
+
+    if (event.type === 'Zoom') {
+        body += `■Zoom情報\n` +
+            `Zoom ID : 9501470716\n` +
+            `Password : vi31Wu\n\n` +
+            `▼参加URL\n` +
+            `https://us06web.zoom.us/j/9501470716?pwd=mF47KuwekItW9yiUPfMlhnTI4OExji.1\n\n`;
+    }
+
+    body += `■お支払いについて\n`;
+
+    if (reg.paymentMethod === 'paypal') {
+        body += `PayPalにてお支払いが完了しております。\n当日お会いできるのを楽しみにしております。\n`;
+    } else if (reg.paymentMethod === 'bank_transfer') {
+        body += `以下の口座へのお振込みをお願いいたします。\n\n` +
+            `銀行名: ${paymentSettings.bankName}\n` +
+            `支店名: ${paymentSettings.bankBranch}\n` +
+            `口座番号: ${paymentSettings.bankAccount}\n` +
+            `名義人: ${paymentSettings.bankAccountName}\n\n` +
+            `※お振込み手数料はお客様負担となります。ご了承ください。\n`;
+    } else if (reg.paymentMethod === 'paypay') {
+        body += `以下のPayPay ID宛に送金をお願いいたします。\n\n` +
+            `PayPay ID: ${paymentSettings.paypayId}\n\n` +
+            `※送金時はメッセージにお名前をご記入ください。\n`;
+    } else {
+        body += `当日現地にてお支払い、または別途ご案内いたします。\n`;
+    }
+
+    body += `\n------------------------------------------------\n` +
+        `未来少年タケル公式LINE\n` +
+        `お問い合わせ: https://lin.ee/rquRPlF\n` +
+        `------------------------------------------------\n`;
+
+    GmailApp.sendEmail(reg.email, subject, body);
 }
 
 // --- Feedback ---
@@ -310,7 +392,7 @@ function getSheet(name) {
         sheet = ss.insertSheet(name);
         // Initialize headers if new
         let headers = [];
-        if (name === SHEET_NAMES.EVENTS) headers = ['id', 'title', 'description', 'date', 'startTime', 'endTime', 'type', 'location', 'capacity', 'price', 'status'];
+        if (name === SHEET_NAMES.EVENTS) headers = ['id', 'title', 'description', 'date', 'startTime', 'endTime', 'type', 'location', 'capacity', 'price', 'status', 'prefecture', 'address', 'mapUrl'];
         if (name === SHEET_NAMES.REGISTRATIONS) headers = ['id', 'eventId', 'applicantName', 'email', 'phone', 'registeredAt', 'status', 'surveySent', 'prefecture', 'dob', 'paymentMethod'];
         if (name === SHEET_NAMES.FEEDBACK) headers = ['id', 'eventId', 'authorName', 'rating', 'comment', 'isApproved', 'createdAt'];
         if (name === SHEET_NAMES.FEEDBACK) headers = ['id', 'eventId', 'authorName', 'rating', 'comment', 'isApproved', 'createdAt'];

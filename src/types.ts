@@ -14,7 +14,10 @@ export interface Event {
   location?: string; // For in-person
   capacity: number;
   price: number;
-  status: 'upcoming' | 'completed' | 'canceled';
+  status: 'upcoming' | 'full' | 'closed';
+  prefecture?: string;
+  address?: string;
+  mapUrl?: string;
 }
 
 export interface Registration {

@@ -62,7 +62,8 @@ export const Admin: React.FC = () => {
   // Event Import
   const [showEventImportModal, setShowEventImportModal] = useState(false);
   const [singleEventInput, setSingleEventInput] = useState<Partial<Event>>({
-    title: '', date: '', startTime: '10:00', endTime: '12:00', type: EventType.ZOOM, capacity: 5, price: 3000, status: 'completed'
+    title: '', date: '', startTime: '10:00', endTime: '12:00', type: EventType.ZOOM, capacity: 5, price: 3000, status: 'completed',
+    location: '', prefecture: '', address: '', mapUrl: ''
   });
 
   // Registration Import
@@ -535,7 +536,7 @@ export const Admin: React.FC = () => {
                     </thead>
                     <tbody className="divide-y">
                       {events.map(event => (
-                        <tr key={event.id} className={cn("hover:bg-slate-50/50 transition-colors", (event.date && event.date.startsWith('#')) && "bg-red-50")}>
+                        <tr key={event.id} className={cn("hover:bg-slate-50/50", (event.date && event.date.startsWith('#')) && "bg-red-50")}>
                           <td className="p-3 font-mono text-xs text-slate-400">
                             <button onClick={() => copyToClipboard(event.id)} className="hover:text-teal-600 flex items-center gap-1">
                               {event.id.substring(0, 6)}... <Copy className="w-3 h-3" />
@@ -836,6 +837,45 @@ export const Admin: React.FC = () => {
                 </Select>
               </div>
             </div>
+
+            {newEvent.type === EventType.IN_PERSON && (
+              <>
+                <div className="space-y-2">
+                  <Label>都道府県</Label>
+                  <Input
+                    value={newEvent.prefecture || ''}
+                    onChange={e => setNewEvent({ ...newEvent, prefecture: e.target.value })}
+                    placeholder="例: 愛知県"
+                  />
+                </div>
+                <div className="space-y-2">
+                  <Label>住所</Label>
+                  <Input
+                    value={newEvent.address || ''}
+                    onChange={e => setNewEvent({ ...newEvent, address: e.target.value })}
+                    placeholder="詳しい住所"
+                  />
+                </div>
+                <div className="space-y-2">
+                  <Label>Google Map URL</Label>
+                  <Input
+                    value={newEvent.mapUrl || ''}
+                    onChange={e => setNewEvent({ ...newEvent, mapUrl: e.target.value })}
+                    placeholder="https://maps.google.com/..."
+                  />
+                </div>
+              </>
+            )}
+
+            <div className="space-y-2">
+              <Label>開催場所名 (メール/一覧表示用)</Label>
+              <Input
+                value={newEvent.location || ''}
+                onChange={e => setNewEvent({ ...newEvent, location: e.target.value })}
+                placeholder={newEvent.type === EventType.ZOOM ? 'オンライン' : '会場名など'}
+              />
+            </div>
+
             <div className="grid grid-cols-2 gap-4">
               <div className="space-y-2">
                 <Label>開始時間</Label>
