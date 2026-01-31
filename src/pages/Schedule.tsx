@@ -393,7 +393,7 @@ export const Schedule: React.FC = () => {
                           <div className="bg-slate-50 p-4 rounded text-sm text-slate-700">
                             <p className="font-bold mb-2">PayPayでのお支払い</p>
                             <p>以下のID宛に送金をお願いいたします。</p>
-                            <p className="my-2 font-mono bg-white p-2 rounded border text-center select-all">ID: {paymentSettings?.paypayId || 'theta-demo-user'}</p>
+                            <p className="my-2 font-mono bg-white p-2 rounded border text-center select-all">ID: {paymentSettings?.paypayId || 'na2wa8'}</p>
                             <p className="text-xs text-slate-500">※送金完了後、下のボタンを押して予約を確定してください。</p>
                           </div>
                           <Button type="submit" disabled={isSubmitting} className="w-full bg-teal-600 hover:bg-teal-700">
@@ -408,10 +408,10 @@ export const Schedule: React.FC = () => {
                             <p className="font-bold mb-2">銀行振込</p>
                             <p>以下へのお振込みをお願いいたします。</p>
                             <ul className="list-disc list-inside my-2 space-y-1 text-xs">
-                              <li>銀行名: {paymentSettings?.bankName || '○○銀行'}</li>
-                              <li>支店名: {paymentSettings?.bankBranch || '○○支店'}</li>
-                              <li>口座: {paymentSettings?.bankAccount || '普通 1234567'}</li>
-                              <li>名義: {paymentSettings?.bankAccountName || 'シータヒーリングジム'}</li>
+                              <li>銀行名: {paymentSettings?.bankName || 'auじぶん銀行'}</li>
+                              <li>支店名: {paymentSettings?.bankBranch || 'だいだい支店'}</li>
+                              <li>口座: {paymentSettings?.bankAccount || '普通 3524711'}</li>
+                              <li>名義: {paymentSettings?.bankAccountName || 'スズキ タケル'}</li>
                             </ul>
                             <p className="text-xs text-slate-500">※お振込み後、下のボタンを押して予約を確定してください。</p>
                           </div>

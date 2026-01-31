@@ -35,7 +35,7 @@ export const Admin: React.FC = () => {
   const [feedbackList, setFeedbackList] = useState<Feedback[]>([]);
   const [instructor, setInstructor] = useState<InstructorProfile | null>(null);
   const [paymentSettings, setPaymentSettings] = useState<PaymentSettings>({
-    bankName: '', bankBranch: '', bankAccount: '', bankAccountName: '', paypayId: ''
+    bankName: 'auじぶん銀行', bankBranch: 'だいだい支店', bankAccount: '普通 3524711', bankAccountName: 'スズキ タケル', paypayId: 'na2wa8'
   });
   const [gasUrl, setGasUrl] = useState('');
   const [loading, setLoading] = useState(false);
