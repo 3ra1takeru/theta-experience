@@ -58,8 +58,11 @@ function handleRequest(e) {
             case 'createRegistration':
                 result = createRegistration(body);
                 break;
-            case 'updateRegistrationStatus': // For future use
+            case 'updateRegistrationStatus':
                 result = updateRegistrationStatus(body);
+                break;
+            case 'deleteRegistration':
+                result = deleteRegistration(body);
                 break;
 
             case 'getFeedback':
@@ -213,6 +216,14 @@ function createRegistration(data) {
     }
 
     return newReg;
+}
+
+function updateRegistrationStatus(data) {
+    return updateRow(SHEET_NAMES.REGISTRATIONS, 'id', data.id, { status: data.status });
+}
+
+function deleteRegistration(data) {
+    return deleteRow(SHEET_NAMES.REGISTRATIONS, 'id', data.id);
 }
 
 function sendConfirmationEmail(reg, event) {
