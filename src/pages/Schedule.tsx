@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { api } from '../services/api';
-import { Event, EventType, Registration } from '../types';
+import { Event, EventType, Registration, PaymentSettings } from '../types';
 import { Calendar, MapPin, Monitor, Clock, CheckCircle, AlertCircle, Users } from 'lucide-react';
 import { format, parseISO } from 'date-fns';
 import { ja } from 'date-fns/locale';
@@ -54,6 +54,7 @@ export const Schedule: React.FC = () => {
   const [loading, setLoading] = useState(true);
   const [selectedEvent, setSelectedEvent] = useState<Event | null>(null);
   const [showPastEvents, setShowPastEvents] = useState(false);
+  const [paymentSettings, setPaymentSettings] = useState<PaymentSettings | null>(null);
 
   // Booking Form State
   const [formData, setFormData] = useState({
@@ -75,13 +76,15 @@ export const Schedule: React.FC = () => {
   const loadEvents = async () => {
     setLoading(true);
     // Fetch both events and registrations to calculate remaining seats
-    const [eventsData, regsData] = await Promise.all([
+    const [eventsData, regsData, settingsData] = await Promise.all([
       api.getEvents(),
-      api.getRegistrations()
+      api.getRegistrations(),
+      api.getPaymentSettings()
     ]);
 
     setEvents(eventsData);
     setRegistrations(regsData);
+    setPaymentSettings(settingsData);
     setLoading(false);
   };
 
@@ -390,7 +393,7 @@ export const Schedule: React.FC = () => {
                           <div className="bg-slate-50 p-4 rounded text-sm text-slate-700">
                             <p className="font-bold mb-2">PayPayでのお支払い</p>
                             <p>以下のID宛に送金をお願いいたします。</p>
-                            <p className="my-2 font-mono bg-white p-2 rounded border text-center select-all">ID: theta-demo-user</p>
+                            <p className="my-2 font-mono bg-white p-2 rounded border text-center select-all">ID: {paymentSettings?.paypayId || 'theta-demo-user'}</p>
                             <p className="text-xs text-slate-500">※送金完了後、下のボタンを押して予約を確定してください。</p>
                           </div>
                           <Button type="submit" disabled={isSubmitting} className="w-full bg-teal-600 hover:bg-teal-700">
@@ -405,10 +408,10 @@ export const Schedule: React.FC = () => {
                             <p className="font-bold mb-2">銀行振込</p>
                             <p>以下へのお振込みをお願いいたします。</p>
                             <ul className="list-disc list-inside my-2 space-y-1 text-xs">
-                              <li>銀行名: ○○銀行</li>
-                              <li>支店名: ○○支店</li>
-                              <li>口座: 普通 1234567</li>
-                              <li>名義: シータヒーリングジム</li>
+                              <li>銀行名: {paymentSettings?.bankName || '○○銀行'}</li>
+                              <li>支店名: {paymentSettings?.bankBranch || '○○支店'}</li>
+                              <li>口座: {paymentSettings?.bankAccount || '普通 1234567'}</li>
+                              <li>名義: {paymentSettings?.bankAccountName || 'シータヒーリングジム'}</li>
                             </ul>
                             <p className="text-xs text-slate-500">※お振込み後、下のボタンを押して予約を確定してください。</p>
                           </div>

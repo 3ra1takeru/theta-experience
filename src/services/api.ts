@@ -1,4 +1,4 @@
-import { Event, Registration, Feedback, InstructorProfile } from '../types';
+import { Event, Registration, Feedback, InstructorProfile, PaymentSettings } from '../types';
 
 const API_URL = 'https://script.google.com/macros/s/AKfycbxuUnhUnr1zfeIzfsYg_KR2eem7Rxy7-Y1lTcJz6SR8bQqIq7H6YYFR62TjLkzGnVS1/exec';
 
@@ -104,6 +104,15 @@ export const api = {
 
   updateInstructorProfile: async (profile: InstructorProfile): Promise<InstructorProfile> => {
     return callApi<InstructorProfile>('updateInstructor', 'POST', profile);
+  },
+
+  // --- Payment Settings ---
+  getPaymentSettings: async (): Promise<PaymentSettings> => {
+    return callApi<PaymentSettings>('getPaymentSettings');
+  },
+
+  savePaymentSettings: async (settings: PaymentSettings): Promise<PaymentSettings> => {
+    return callApi<PaymentSettings>('savePaymentSettings', 'POST', settings);
   },
 
   // --- Google Calendar (GAS) ---

@@ -2,7 +2,8 @@ const SHEET_NAMES = {
     EVENTS: 'Events',
     REGISTRATIONS: 'Registrations',
     FEEDBACK: 'Feedback',
-    INSTRUCTOR: 'Instructor'
+    INSTRUCTOR: 'Instructor',
+    SETTINGS: 'Settings'
 };
 
 function doGet(e) {
@@ -80,6 +81,13 @@ function handleRequest(e) {
                 break;
             case 'updateInstructor':
                 result = updateInstructor(body);
+                break;
+
+            case 'getPaymentSettings':
+                result = getPaymentSettings();
+                break;
+            case 'savePaymentSettings':
+                result = savePaymentSettings(body);
                 break;
 
             default:
@@ -232,6 +240,66 @@ function updateInstructor(data) {
     return newData;
 }
 
+// --- Settings ---
+function getPaymentSettings() {
+    const data = getSheetData(SHEET_NAMES.SETTINGS);
+    // Convert array of [{key, value}] to object
+    const settings = {
+        bankName: '',
+        bankBranch: '',
+        bankAccount: '',
+        bankAccountName: '',
+        paypayId: ''
+    };
+
+    data.forEach(item => {
+        if (settings.hasOwnProperty(item.key)) {
+            settings[item.key] = item.value;
+        }
+    });
+
+    return settings;
+}
+
+function savePaymentSettings(data) {
+    const sheet = getSheet(SHEET_NAMES.SETTINGS);
+    const existingData = sheet.getDataRange().getValues();
+    const headers = existingData[0]; // key, value
+
+    // Simple approach: Clear and rewrite, or update row by row.
+    // Given it's small, let's just ensure we have rows for each key.
+
+    const updates = {
+        bankName: data.bankName || '',
+        bankBranch: data.bankBranch || '',
+        bankAccount: data.bankAccount || '',
+        bankAccountName: data.bankAccountName || '',
+        paypayId: data.paypayId || ''
+    };
+
+    // Helper to update or append
+    const updateOrAppend = (key, value) => {
+        const rows = sheet.getDataRange().getValues();
+        let found = false;
+        for (let i = 1; i < rows.length; i++) {
+            if (rows[i][0] === key) {
+                sheet.getRange(i + 1, 2).setValue(value);
+                found = true;
+                break;
+            }
+        }
+        if (!found) {
+            sheet.appendRow([key, value]);
+        }
+    };
+
+    Object.keys(updates).forEach(key => {
+        updateOrAppend(key, updates[key]);
+    });
+
+    return updates;
+}
+
 
 // --- Helpers ---
 
@@ -245,7 +313,9 @@ function getSheet(name) {
         if (name === SHEET_NAMES.EVENTS) headers = ['id', 'title', 'description', 'date', 'startTime', 'endTime', 'type', 'location', 'capacity', 'price', 'status'];
         if (name === SHEET_NAMES.REGISTRATIONS) headers = ['id', 'eventId', 'applicantName', 'email', 'phone', 'registeredAt', 'status', 'surveySent', 'prefecture', 'dob', 'paymentMethod'];
         if (name === SHEET_NAMES.FEEDBACK) headers = ['id', 'eventId', 'authorName', 'rating', 'comment', 'isApproved', 'createdAt'];
+        if (name === SHEET_NAMES.FEEDBACK) headers = ['id', 'eventId', 'authorName', 'rating', 'comment', 'isApproved', 'createdAt'];
         if (name === SHEET_NAMES.INSTRUCTOR) headers = ['name', 'title', 'introduction', 'imageUrl'];
+        if (name === SHEET_NAMES.SETTINGS) headers = ['key', 'value'];
 
         if (headers.length > 0) sheet.appendRow(headers);
     }

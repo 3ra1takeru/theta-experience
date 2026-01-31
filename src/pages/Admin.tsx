@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { api } from '../services/api';
-import { Event, Registration, Feedback, EventType, InstructorProfile } from '../types';
+import { Event, Registration, Feedback, EventType, InstructorProfile, PaymentSettings } from '../types';
 import { format, parseISO } from 'date-fns';
 import { Plus, Download, Send, Check, Trash2, XCircle, User, Save, Upload, FileText, Copy, Settings, RefreshCw } from 'lucide-react';
 import { Button } from "@/components/ui/button";
@@ -34,6 +34,9 @@ export const Admin: React.FC = () => {
   const [registrations, setRegistrations] = useState<Registration[]>([]);
   const [feedbackList, setFeedbackList] = useState<Feedback[]>([]);
   const [instructor, setInstructor] = useState<InstructorProfile | null>(null);
+  const [paymentSettings, setPaymentSettings] = useState<PaymentSettings>({
+    bankName: '', bankBranch: '', bankAccount: '', bankAccountName: '', paypayId: ''
+  });
   const [gasUrl, setGasUrl] = useState('');
   const [loading, setLoading] = useState(false);
 
@@ -91,22 +94,29 @@ export const Admin: React.FC = () => {
 
   // --- Data Loading ---
 
-
   const loadAllData = async () => {
     setLoading(true);
-    const [e, r, f, i, g] = await Promise.all([
-      api.getEvents(),
-      api.getRegistrations(),
-      api.getFeedback(false), // Get all for admin
-      api.getInstructorProfile(),
-      api.getGasUrl()
-    ]);
-    setEvents(e);
-    setRegistrations(r);
-    setFeedbackList(f);
-    setInstructor(i);
-    setGasUrl(g);
-    setLoading(false);
+    try {
+      const [e, r, f, i, p, g] = await Promise.all([
+        api.getEvents(),
+        api.getRegistrations(),
+        api.getFeedback(false),
+        api.getInstructorProfile(),
+        api.getPaymentSettings(),
+        api.getGasUrl()
+      ]);
+      setEvents(e);
+      setRegistrations(r);
+      setFeedbackList(f);
+      setInstructor(i);
+      setPaymentSettings(p);
+      setGasUrl(g);
+    } catch (err) {
+      console.error("Failed to load data", err);
+      alert("データの読み込みに失敗しました");
+    } finally {
+      setLoading(false);
+    }
   };
 
   // --- Event Creation (Standard) ---
@@ -440,6 +450,55 @@ export const Admin: React.FC = () => {
                       </div>
                       <div className="flex justify-end">
                         <Button type="submit">保存する</Button>
+                      </div>
+                    </form>
+                  </div>
+
+                  <div className="bg-slate-50 border border-slate-200 rounded-xl p-6">
+                    <h4 className="font-bold text-slate-800 mb-4">支払方法設定</h4>
+                    <form
+                      onSubmit={async (e) => {
+                        e.preventDefault();
+                        await api.savePaymentSettings(paymentSettings);
+                        alert('支払設定を保存しました');
+                      }}
+                      className="space-y-6"
+                    >
+                      {/* Bank Transfer */}
+                      <div className="space-y-4">
+                        <h5 className="font-bold text-sm text-slate-700 border-b pb-2">銀行振込</h5>
+                        <div className="grid grid-cols-2 gap-4">
+                          <div className="space-y-2">
+                            <Label>銀行名</Label>
+                            <Input value={paymentSettings.bankName} onChange={e => setPaymentSettings({ ...paymentSettings, bankName: e.target.value })} placeholder="○○銀行" />
+                          </div>
+                          <div className="space-y-2">
+                            <Label>支店名</Label>
+                            <Input value={paymentSettings.bankBranch} onChange={e => setPaymentSettings({ ...paymentSettings, bankBranch: e.target.value })} placeholder="○○支店" />
+                          </div>
+                          <div className="space-y-2">
+                            <Label>口座番号</Label>
+                            <Input value={paymentSettings.bankAccount} onChange={e => setPaymentSettings({ ...paymentSettings, bankAccount: e.target.value })} placeholder="普通 1234567" />
+                          </div>
+                          <div className="space-y-2">
+                            <Label>口座名義</Label>
+                            <Input value={paymentSettings.bankAccountName} onChange={e => setPaymentSettings({ ...paymentSettings, bankAccountName: e.target.value })} placeholder="シータヒーリングジム" />
+                          </div>
+                        </div>
+                      </div>
+
+                      {/* PayPay */}
+                      <div className="space-y-4">
+                        <h5 className="font-bold text-sm text-slate-700 border-b pb-2">PayPay</h5>
+                        <div className="space-y-2">
+                          <Label>PayPay ID</Label>
+                          <Input value={paymentSettings.paypayId} onChange={e => setPaymentSettings({ ...paymentSettings, paypayId: e.target.value })} placeholder="theta-demo-user" />
+                          <p className="text-xs text-slate-500">※ユーザーに表示される送金先IDです。</p>
+                        </div>
+                      </div>
+
+                      <div className="flex justify-end pt-4">
+                        <Button type="submit" className="bg-teal-600 hover:bg-teal-700">保存する</Button>
                       </div>
                     </form>
                   </div>

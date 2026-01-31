@@ -50,5 +50,13 @@ export interface InstructorProfile {
   websiteUrl?: string;
 }
 
+export interface PaymentSettings {
+  bankName: string;
+  bankBranch: string;
+  bankAccount: string;
+  bankAccountName: string;
+  paypayId: string;
+}
+
 // Helper to simulate database latency
 export const delay = (ms: number) => new Promise(resolve => setTimeout(resolve, ms));
