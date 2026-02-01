@@ -38,6 +38,10 @@ export const api = {
     return callApi<Event>('createEvent', 'POST', event);
   },
 
+  updateEvent: async (event: Partial<Event>): Promise<Event> => {
+    return callApi<Event>('updateEvent', 'POST', event);
+  },
+
   updateEventStatus: async (id: string, status: Event['status']): Promise<void> => {
     await callApi('updateEventStatus', 'POST', { id, status });
   },

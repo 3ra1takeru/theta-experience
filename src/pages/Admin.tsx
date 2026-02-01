@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { api } from '../services/api';
 import { Event, Registration, Feedback, EventType, InstructorProfile, PaymentSettings } from '../types';
 import { format, parseISO } from 'date-fns';
-import { Plus, Download, Send, Check, Trash2, XCircle, User, Save, Upload, FileText, Copy, Settings, RefreshCw } from 'lucide-react';
+import { Plus, Download, Send, Check, Trash2, XCircle, User, Save, Upload, FileText, Copy, Settings, RefreshCw, Pencil } from 'lucide-react';
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -41,13 +41,7 @@ export const Admin: React.FC = () => {
   const [loading, setLoading] = useState(false);
 
   // Actions
-  const [showCreateModal, setShowCreateModal] = useState(false);
-  const [newEvent, setNewEvent] = useState<Partial<Event>>({
-    type: EventType.ZOOM,
-    capacity: 5,
-    price: 3000,
-    status: 'upcoming'
-  });
+
   const [sendingEmailId, setSendingEmailId] = useState<string | null>(null);
   const [profileSaving, setProfileSaving] = useState(false);
   const [isCreating, setIsCreating] = useState(false);
@@ -63,6 +57,15 @@ export const Admin: React.FC = () => {
   const [showEventImportModal, setShowEventImportModal] = useState(false);
   const [singleEventInput, setSingleEventInput] = useState<Partial<Event>>({
     title: '', date: '', startTime: '10:00', endTime: '12:00', type: EventType.ZOOM, capacity: 5, price: 3000, status: 'completed',
+    location: '', prefecture: '', address: '', mapUrl: ''
+  });
+
+  // Event Creation / Editing (Variable names collided, fixing)
+  const [showCreateModal, setShowCreateModal] = useState(false);
+  const [isEditing, setIsEditing] = useState(false);
+  const [newEvent, setNewEvent] = useState<Partial<Event>>({
+    title: '', description: '', date: '', startTime: '10:00', endTime: '12:00',
+    type: EventType.ZOOM, capacity: 5, price: 3000, status: 'upcoming',
     location: '', prefecture: '', address: '', mapUrl: ''
   });
 
@@ -564,6 +567,17 @@ export const Admin: React.FC = () => {
                                   <Send className="w-4 h-4" />
                                 </Button>
                               )}
+                              <Button
+                                type="button" variant="outline" size="icon" className="h-8 w-8 text-blue-600 border-blue-200 hover:bg-blue-50"
+                                onClick={() => {
+                                  setNewEvent({ ...event });
+                                  setIsEditing(true);
+                                  setShowCreateModal(true);
+                                }}
+                                title="編集"
+                              >
+                                <Pencil className="w-4 h-4" />
+                              </Button>
                               <Button
                                 type="button" variant="outline" size="icon" className="h-8 w-8 text-teal-600 border-teal-200 hover:bg-teal-50"
                                 onClick={() => {

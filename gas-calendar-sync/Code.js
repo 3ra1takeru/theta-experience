@@ -48,6 +48,9 @@ function handleRequest(e) {
             case 'updateEventStatus':
                 result = updateEventStatus(body);
                 break;
+            case 'updateEvent':
+                result = updateEvent(body);
+                break;
             case 'deleteEvent':
                 result = deleteEvent(body);
                 break;
@@ -172,6 +175,33 @@ function createEvent(data) {
     }
 
     return newEvent;
+}
+
+function updateEvent(data) {
+    if (!data.id) throw new Error("Missing event ID");
+
+    // Fields allowed to update
+    const updateData = {
+        title: data.title,
+        description: data.description,
+        date: data.date,
+        startTime: data.startTime,
+        endTime: data.endTime,
+        type: data.type,
+        location: data.location,
+        capacity: data.capacity,
+        price: data.price,
+        prefecture: data.prefecture,
+        address: data.address,
+        mapUrl: data.mapUrl
+    };
+
+    // Remove undefined keys
+    Object.keys(updateData).forEach(key =>
+        (updateData[key] === undefined || updateData[key] === null) && delete updateData[key]
+    );
+
+    return updateRow(SHEET_NAMES.EVENTS, 'id', data.id, updateData);
 }
 
 function updateEventStatus(data) {
