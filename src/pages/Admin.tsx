@@ -564,6 +564,20 @@ export const Admin: React.FC = () => {
                                   <Send className="w-4 h-4" />
                                 </Button>
                               )}
+                              <Button
+                                type="button" variant="outline" size="icon" className="h-8 w-8 text-teal-600 border-teal-200 hover:bg-teal-50"
+                                onClick={() => {
+                                  setNewEvent({
+                                    ...event,
+                                    date: '', // Clear date to prompt change
+                                    status: 'upcoming' // Reset status
+                                  });
+                                  setShowCreateModal(true);
+                                }}
+                                title="複製して新規作成"
+                              >
+                                <Copy className="w-4 h-4" />
+                              </Button>
                               <Button type="button" variant="outline" size="icon" className="h-8 w-8 text-red-600 border-red-200 hover:bg-red-50" onClick={() => setEventToDelete(event)} title="削除">
                                 <Trash2 className="w-4 h-4" />
                               </Button>
