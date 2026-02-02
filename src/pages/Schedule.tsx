@@ -30,11 +30,13 @@ const PREFECTURES = [
 
 const formatTime = (timeStr: string) => {
   if (!timeStr) return '';
-  // If it's an ISO string (e.g., 1899-12-30T20:00:00.000Z), extract the HH:mm part directly
-  // to avoid timezone shifting (e.g. 20:00Z -> 05:00 JST).
+  // If it's an ISO string, parse it to get local time (JST) instead of raw UTC
   if (timeStr.includes('T')) {
-    const timePart = timeStr.split('T')[1];
-    return timePart.substring(0, 5); // "20:00"
+    try {
+      return format(parseISO(timeStr), 'H:mm');
+    } catch (e) {
+      return timeStr.split('T')[1].substring(0, 5); // Fallback
+    }
   }
   return timeStr;
 };

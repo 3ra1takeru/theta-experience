@@ -583,7 +583,8 @@ export const Admin: React.FC = () => {
                                 onClick={() => {
                                   setNewEvent({
                                     ...event,
-                                    date: '', // Clear date to prompt change
+                                    ...event,
+                                    // Keep date for easier duplication close to original
                                     status: 'upcoming' // Reset status
                                   });
                                   setShowCreateModal(true);
@@ -850,7 +851,10 @@ export const Admin: React.FC = () => {
             <div className="grid grid-cols-2 gap-4">
               <div className="space-y-2">
                 <Label>日付</Label>
-                <Input type="date" max="9999-12-31" required onChange={e => setNewEvent({ ...newEvent, date: new Date(e.target.value).toISOString() })} />
+                <Input type="date" max="9999-12-31" required
+                  value={newEvent.date && !newEvent.date.startsWith('#') ? format(parseISO(newEvent.date), 'yyyy-MM-dd') : ''}
+                  onChange={e => setNewEvent({ ...newEvent, date: new Date(e.target.value).toISOString() })}
+                />
               </div>
               <div className="space-y-2">
                 <Label>形式</Label>
@@ -907,11 +911,17 @@ export const Admin: React.FC = () => {
             <div className="grid grid-cols-2 gap-4">
               <div className="space-y-2">
                 <Label>開始時間</Label>
-                <Input type="time" required value={newEvent.startTime || ''} onChange={e => setNewEvent({ ...newEvent, startTime: e.target.value })} />
+                <Input type="time" required
+                  value={newEvent.startTime?.includes('T') ? format(parseISO(newEvent.startTime!), 'HH:mm') : (newEvent.startTime || '')}
+                  onChange={e => setNewEvent({ ...newEvent, startTime: e.target.value })}
+                />
               </div>
               <div className="space-y-2">
                 <Label>終了時間</Label>
-                <Input type="time" required value={newEvent.endTime || ''} onChange={e => setNewEvent({ ...newEvent, endTime: e.target.value })} />
+                <Input type="time" required
+                  value={newEvent.endTime?.includes('T') ? format(parseISO(newEvent.endTime!), 'HH:mm') : (newEvent.endTime || '')}
+                  onChange={e => setNewEvent({ ...newEvent, endTime: e.target.value })}
+                />
               </div>
             </div>
             <div className="space-y-2">
