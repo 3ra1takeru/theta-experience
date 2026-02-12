@@ -7,12 +7,16 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 
 export const FeedbackForm: React.FC = () => {
     const navigate = useNavigate();
     const [rating, setRating] = useState(5);
     const [hoverRating, setHoverRating] = useState(0);
     const [name, setName] = useState('');
+    const [gender, setGender] = useState('');
+    const [ageGroup, setAgeGroup] = useState('');
+    const [prefecture, setPrefecture] = useState('');
     const [comment, setComment] = useState('');
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [isSuccess, setIsSuccess] = useState(false);
@@ -103,8 +107,8 @@ export const FeedbackForm: React.FC = () => {
                                     >
                                         <Star
                                             className={`w-8 h-8 transition-colors duration-200 ${star <= (hoverRating || rating)
-                                                    ? "fill-amber-400 text-amber-400 drop-shadow-sm"
-                                                    : "text-slate-300 fill-slate-100"
+                                                ? "fill-amber-400 text-amber-400 drop-shadow-sm"
+                                                : "text-slate-300 fill-slate-100"
                                                 }`}
                                         />
                                     </button>
@@ -117,6 +121,55 @@ export const FeedbackForm: React.FC = () => {
                                 {(hoverRating || rating) === 2 && "いまひとつ"}
                                 {(hoverRating || rating) === 1 && "改善してほしい"}
                             </p>
+                        </div>
+
+                        {/* Attributes Grid */}
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <div className="space-y-2">
+                                <Label className="text-slate-700">性別</Label>
+                                <Select value={gender} onValueChange={setGender}>
+                                    <SelectTrigger className="bg-white/50 border-slate-200">
+                                        <SelectValue placeholder="選択してください" />
+                                    </SelectTrigger>
+                                    <SelectContent>
+                                        <SelectItem value="女性">女性</SelectItem>
+                                        <SelectItem value="男性">男性</SelectItem>
+                                        <SelectItem value="その他">その他</SelectItem>
+                                        <SelectItem value="回答しない">回答しない</SelectItem>
+                                    </SelectContent>
+                                </Select>
+                            </div>
+
+                            <div className="space-y-2">
+                                <Label className="text-slate-700">年代</Label>
+                                <Select value={ageGroup} onValueChange={setAgeGroup}>
+                                    <SelectTrigger className="bg-white/50 border-slate-200">
+                                        <SelectValue placeholder="選択してください" />
+                                    </SelectTrigger>
+                                    <SelectContent>
+                                        <SelectItem value="10代">10代</SelectItem>
+                                        <SelectItem value="20代">20代</SelectItem>
+                                        <SelectItem value="30代">30代</SelectItem>
+                                        <SelectItem value="40代">40代</SelectItem>
+                                        <SelectItem value="50代">50代</SelectItem>
+                                        <SelectItem value="60代以上">60代以上</SelectItem>
+                                    </SelectContent>
+                                </Select>
+                            </div>
+                        </div>
+
+                        <div className="space-y-2">
+                            <Label className="text-slate-700">お住まいの都道府県</Label>
+                            <Select value={prefecture} onValueChange={setPrefecture}>
+                                <SelectTrigger className="bg-white/50 border-slate-200">
+                                    <SelectValue placeholder="選択してください" />
+                                </SelectTrigger>
+                                <SelectContent className="max-h-[200px]">
+                                    {["北海道", "青森県", "岩手県", "宮城県", "秋田県", "山形県", "福島県", "茨城県", "栃木県", "群馬県", "埼玉県", "千葉県", "東京都", "神奈川県", "新潟県", "富山県", "石川県", "福井県", "山梨県", "長野県", "岐阜県", "静岡県", "愛知県", "三重県", "滋賀県", "京都府", "大阪府", "兵庫県", "奈良県", "和歌山県", "鳥取県", "島根県", "岡山県", "広島県", "山口県", "徳島県", "香川県", "愛媛県", "高知県", "福岡県", "佐賀県", "長崎県", "熊本県", "大分県", "宮崎県", "鹿児島県", "沖縄県", "海外"].map(p => (
+                                        <SelectItem key={p} value={p}>{p}</SelectItem>
+                                    ))}
+                                </SelectContent>
+                            </Select>
                         </div>
 
                         {/* Name */}

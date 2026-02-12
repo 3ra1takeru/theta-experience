@@ -42,6 +42,9 @@ export interface Feedback {
   comment: string;
   isApproved: boolean; // For admin moderation
   createdAt: string;
+  gender?: string;
+  ageGroup?: string;
+  prefecture?: string;
 }
 
 export interface InstructorProfile {
