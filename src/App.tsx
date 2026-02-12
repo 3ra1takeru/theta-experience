@@ -5,6 +5,7 @@ import { Home } from './pages/Home';
 import { Schedule } from './pages/Schedule';
 import { Testimonials } from './pages/Testimonials';
 import { Admin } from './pages/Admin';
+import { FeedbackForm } from './pages/FeedbackForm';
 
 import { PayPalScriptProvider } from "@paypal/react-paypal-js";
 
@@ -20,6 +21,7 @@ function App() {
             <Route path="/" element={<Home />} />
             <Route path="/schedule" element={<Schedule />} />
             <Route path="/testimonials" element={<Testimonials />} />
+            <Route path="/feedback" element={<FeedbackForm />} />
             <Route path="/admin" element={<Admin />} />
           </Routes>
         </Layout>
