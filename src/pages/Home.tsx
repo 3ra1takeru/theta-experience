@@ -127,15 +127,12 @@ export const Home: React.FC = () => {
             <div className="flex flex-col md:flex-row items-center gap-12 md:gap-20">
               {/* Image / Avatar Area */}
               <div className="shrink-0 relative group">
-                <div className={`w-64 h-64 rounded-full shadow-2xl relative z-10 overflow-hidden border-4 border-white ring-1 ring-slate-100 transform transition-transform duration-500 hover:scale-105 ${!instructor.imageUrl && 'bg-gradient-to-tr from-teal-500 to-blue-600 flex items-center justify-center'}`}>
-                  {instructor.imageUrl ? (
-                    <img src={instructor.imageUrl} alt={instructor.name} className="w-full h-full object-cover" />
-                  ) : (
-                    <div className="text-white text-center">
-                      <div className="text-6xl mb-2 filter drop-shadow-md">🔭</div>
-                      <span className="font-bold text-xl tracking-widest drop-shadow-sm">TAKERU</span>
-                    </div>
-                  )}
+                <div className={`w-64 h-64 rounded-full shadow-2xl relative z-10 overflow-hidden border-4 border-white ring-1 ring-slate-100 transform transition-transform duration-500 hover:scale-105 bg-white`}>
+                  <img
+                    src={instructor.imageUrl || "/images/instructor_profile.png"}
+                    alt={instructor.name}
+                    className="w-full h-full object-cover"
+                  />
                 </div>
                 {/* Decorative circles */}
                 <div className="absolute top-0 -left-4 w-64 h-64 bg-yellow-300 rounded-full mix-blend-multiply filter blur-3xl opacity-30 animate-pulse"></div>
