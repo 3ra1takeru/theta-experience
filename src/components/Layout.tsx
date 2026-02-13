@@ -27,6 +27,7 @@ export const Layout: React.FC<{ children: React.ReactNode }> = ({ children }) =>
             <nav className="hidden md:flex space-x-10 items-center">
               <Link to="/" className={isActive('/') + " font-medium transition-all hover:-translate-y-0.5"}>ホーム</Link>
               <Link to="/schedule" className={isActive('/schedule') + " font-medium transition-all hover:-translate-y-0.5"}>体験会日程</Link>
+              <Link to="/personal-session" className={isActive('/personal-session') + " font-medium transition-all hover:-translate-y-0.5"}>個人セッション</Link>
               <Link to="/testimonials" className={isActive('/testimonials') + " font-medium transition-all hover:-translate-y-0.5"}>参加者の声</Link>
               <Link to="/admin" className="text-slate-300 hover:text-purple-400 transition-colors">
                 <Lock className="w-4 h-4" />
@@ -48,6 +49,7 @@ export const Layout: React.FC<{ children: React.ReactNode }> = ({ children }) =>
           <div className="md:hidden glass border-t border-white/50 py-6 px-4 space-y-4 animate-fade-in">
             <Link to="/" onClick={() => setIsMenuOpen(false)} className="block text-slate-700 font-medium hover:text-teal-500 pl-2 border-l-2 border-transparent hover:border-teal-300 transition-all">ホーム</Link>
             <Link to="/schedule" onClick={() => setIsMenuOpen(false)} className="block text-slate-700 font-medium hover:text-teal-500 pl-2 border-l-2 border-transparent hover:border-teal-300 transition-all">体験会日程</Link>
+            <Link to="/personal-session" onClick={() => setIsMenuOpen(false)} className="block text-slate-700 font-medium hover:text-teal-500 pl-2 border-l-2 border-transparent hover:border-teal-300 transition-all">個人セッション</Link>
             <Link to="/testimonials" onClick={() => setIsMenuOpen(false)} className="block text-slate-700 font-medium hover:text-teal-500 pl-2 border-l-2 border-transparent hover:border-teal-300 transition-all">参加者の声</Link>
             <Link to="/admin" onClick={() => setIsMenuOpen(false)} className="block text-slate-400 text-sm pl-2">管理者ログイン</Link>
           </div>
@@ -60,7 +62,7 @@ export const Layout: React.FC<{ children: React.ReactNode }> = ({ children }) =>
 
       {/* Mobile Sticky CTA */}
       <div className="md:hidden fixed bottom-0 left-0 right-0 z-40 p-4 bg-white/80 backdrop-blur-md border-t border-white/50 shadow-lg animate-fade-in-up">
-        <Link to="/schedule" className="block w-full text-center bg-gradient-to-r from-teal-500 to-teal-400 text-white font-bold py-3.5 rounded-full shadow-md shadow-teal-200/50 active:scale-95 transition-transform flex items-center justify-center gap-2">
+        <Link to="/schedule" className="w-full text-center bg-gradient-to-r from-teal-500 to-teal-400 text-white font-bold py-3.5 rounded-full shadow-md shadow-teal-200/50 active:scale-95 transition-transform flex items-center justify-center gap-2">
           <Sparkles className="w-5 h-5 animate-pulse" />
           体験会に参加する - ¥3,000
         </Link>

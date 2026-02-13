@@ -4,6 +4,7 @@ import { Layout } from './components/Layout';
 import { Home } from './pages/Home';
 import { Schedule } from './pages/Schedule';
 import { Testimonials } from './pages/Testimonials';
+import { PersonalSession } from './pages/PersonalSession';
 import { Admin } from './pages/Admin';
 import { FeedbackForm } from './pages/FeedbackForm';
 
@@ -21,6 +22,7 @@ function App() {
             <Route path="/" element={<Home />} />
             <Route path="/schedule" element={<Schedule />} />
             <Route path="/testimonials" element={<Testimonials />} />
+            <Route path="/personal-session" element={<PersonalSession />} />
             <Route path="/feedback" element={<FeedbackForm />} />
             <Route path="/admin" element={<Admin />} />
           </Routes>
