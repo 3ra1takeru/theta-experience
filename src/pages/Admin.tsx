@@ -690,7 +690,12 @@ export const Admin: React.FC = () => {
                           )}
                         </div>
                         <p className="text-sm text-slate-600 leading-relaxed">"{fb.comment}"</p>
-                        <div className="text-xs text-slate-400">投稿日: {format(parseISO(fb.createdAt), 'yyyy/MM/dd')}</div>
+                        <div className="text-xs text-slate-400">
+                          投稿日: {format(parseISO(fb.createdAt), 'yyyy/MM/dd')}
+                          <span className="ml-2 px-1.5 py-0.5 bg-slate-100 rounded border border-slate-200 text-slate-500">
+                            ID: {fb.eventId || 'General'}
+                          </span>
+                        </div>
                       </div>
                       <div className="flex flex-col gap-2 shrink-0 justify-center">
                         {fb.isApproved ? (

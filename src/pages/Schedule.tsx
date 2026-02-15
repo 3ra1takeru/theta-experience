@@ -172,7 +172,14 @@ export const Schedule: React.FC = () => {
 
         <div className="space-y-6">
           {events
-            .filter(e => showPastEvents ? true : e.status === 'upcoming')
+            .filter(e => {
+              if (showPastEvents) return true;
+              // Filter out past events based on date, ignoring loose 'status' if date is passed
+              const eventDate = new Date(e.date);
+              const yesterday = new Date();
+              yesterday.setDate(yesterday.getDate() - 1);
+              return eventDate > yesterday;
+            })
             .sort((a, b) => {
               const tA = new Date(a.date).getTime();
               const tB = new Date(b.date).getTime();
