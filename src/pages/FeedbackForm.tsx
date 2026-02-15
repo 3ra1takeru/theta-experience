@@ -28,9 +28,12 @@ export const FeedbackForm: React.FC = () => {
         setIsSubmitting(true);
         try {
             await api.submitFeedback({
+                eventId: '', // General feedback
                 authorName: name,
                 rating,
-                comment
+                comment,
+                prefecture,
+                ageGroup
             });
             setIsSuccess(true);
             setTimeout(() => {
