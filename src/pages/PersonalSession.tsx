@@ -52,8 +52,8 @@ export const PersonalSession: React.FC = () => {
     const fetchReviews = async () => {
       try {
         const allFeedback = await api.getFeedback(true);
-        // Filter for personal session reviews
-        const sessionReviews = allFeedback.filter(f => f.eventId === 'personal_session');
+        // Filter for personal session reviews or general reviews (empty eventId)
+        const sessionReviews = allFeedback.filter(f => f.eventId === 'personal_session' || !f.eventId);
         setReviews(sessionReviews);
       } catch (error) {
         console.error('Failed to fetch reviews', error);
