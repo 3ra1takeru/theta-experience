@@ -459,6 +459,36 @@ export const PersonalSession: React.FC = () => {
                     </div>
                   </div>
 
+                  <div className="grid grid-cols-2 gap-4">
+                    <div>
+                      <Label htmlFor="review-gender" className="text-xs text-slate-500">性別</Label>
+                      <Select value={newReview.gender} onValueChange={(val) => setNewReview({ ...newReview, gender: val })}>
+                        <SelectTrigger className="bg-white">
+                          <SelectValue placeholder="選択" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="女性">女性</SelectItem>
+                          <SelectItem value="男性">男性</SelectItem>
+                          <SelectItem value="その他">その他</SelectItem>
+                          <SelectItem value="回答しない">回答しない</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </div>
+                    <div>
+                      <Label htmlFor="review-occupation" className="text-xs text-slate-500">ご職業</Label>
+                      <Select value={newReview.occupation} onValueChange={(val) => setNewReview({ ...newReview, occupation: val })}>
+                        <SelectTrigger className="bg-white">
+                          <SelectValue placeholder="選択" />
+                        </SelectTrigger>
+                        <SelectContent className="max-h-[200px]">
+                          {OCCUPATIONS.map(occ => (
+                            <SelectItem key={occ} value={occ}>{occ}</SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                    </div>
+                  </div>
+
                   <div>
                     <Label>評価</Label>
                     <div className="flex gap-2 text-amber-400 mt-1 cursor-pointer">
