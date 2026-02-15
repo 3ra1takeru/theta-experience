@@ -176,24 +176,7 @@ export const FeedbackForm: React.FC = () => {
                             </Select>
                         </div>
 
-                        {/* Event Type Selection */}
-                        <div className="space-y-2">
-                            <Label className="text-slate-700">参加されたメニュー</Label>
-                            <Select onValueChange={(val) => {
-                                // We'll handle state update in a unified way or just set a local var if needed, 
-                                // but here we don't have a dedicated state for eventId yet.
-                                // Let's add state for it.
-                            }} defaultValue="experience">
-                                <SelectTrigger className="bg-white/50 border-slate-200">
-                                    <SelectValue placeholder="選択してください" />
-                                </SelectTrigger>
-                                <SelectContent>
-                                    <SelectItem value="experience">シータヒーリング体験会</SelectItem>
-                                    <SelectItem value="personal_session">個人セッション</SelectItem>
-                                </SelectContent>
-                            </Select>
-                            {/* Actually, I need to add state for this first. Terminating this replace to add state. */}
-                        </div>
+
 
                         <div className="space-y-2">
                             <Label className="text-slate-700">お住まいの都道府県</Label>
