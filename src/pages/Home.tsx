@@ -24,7 +24,13 @@ export const Home: React.FC = () => {
         ]);
         // Filter upcoming, sort by date, take top 3
         const upcoming = e
-          .filter(evt => evt.status === 'upcoming')
+          .filter(evt => {
+            if (evt.status !== 'upcoming') return false;
+            const eventDate = new Date(evt.date);
+            const yesterday = new Date();
+            yesterday.setDate(yesterday.getDate() - 1);
+            return eventDate > yesterday;
+          })
           .sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime())
           .slice(0, 3);
         setUpcomingEvents(upcoming);
