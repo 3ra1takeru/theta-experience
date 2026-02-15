@@ -18,6 +18,7 @@ export const FeedbackForm: React.FC = () => {
     const [ageGroup, setAgeGroup] = useState('');
     const [prefecture, setPrefecture] = useState('');
     const [comment, setComment] = useState('');
+    const [sessionType, setSessionType] = useState('experience'); // Default to experience
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [isSuccess, setIsSuccess] = useState(false);
 
@@ -28,7 +29,7 @@ export const FeedbackForm: React.FC = () => {
         setIsSubmitting(true);
         try {
             await api.submitFeedback({
-                eventId: '', // General feedback
+                eventId: sessionType === 'personal_session' ? 'personal_session' : '', // 'personal_session' or empty for general/experience
                 authorName: name,
                 rating,
                 comment,
@@ -87,7 +88,7 @@ export const FeedbackForm: React.FC = () => {
                     </div>
                     <CardTitle className="text-2xl font-bold text-slate-800 font-heading">ご感想をお聞かせください</CardTitle>
                     <CardDescription className="text-slate-500">
-                        体験会はいかがでしたか？<br />
+                        セッションはいかがでしたか？<br />
                         率直なご感想をお待ちしております。
                     </CardDescription>
                 </CardHeader>
@@ -159,6 +160,39 @@ export const FeedbackForm: React.FC = () => {
                                     </SelectContent>
                                 </Select>
                             </div>
+                        </div>
+
+                        {/* Session Type Selection */}
+                        <div className="space-y-2">
+                            <Label className="text-slate-700">参加されたメニュー</Label>
+                            <Select value={sessionType} onValueChange={setSessionType}>
+                                <SelectTrigger className="bg-white/50 border-slate-200">
+                                    <SelectValue placeholder="選択してください" />
+                                </SelectTrigger>
+                                <SelectContent>
+                                    <SelectItem value="experience">シータヒーリング体験会</SelectItem>
+                                    <SelectItem value="personal_session">個人セッション</SelectItem>
+                                </SelectContent>
+                            </Select>
+                        </div>
+
+                        {/* Event Type Selection */}
+                        <div className="space-y-2">
+                            <Label className="text-slate-700">参加されたメニュー</Label>
+                            <Select onValueChange={(val) => {
+                                // We'll handle state update in a unified way or just set a local var if needed, 
+                                // but here we don't have a dedicated state for eventId yet.
+                                // Let's add state for it.
+                            }} defaultValue="experience">
+                                <SelectTrigger className="bg-white/50 border-slate-200">
+                                    <SelectValue placeholder="選択してください" />
+                                </SelectTrigger>
+                                <SelectContent>
+                                    <SelectItem value="experience">シータヒーリング体験会</SelectItem>
+                                    <SelectItem value="personal_session">個人セッション</SelectItem>
+                                </SelectContent>
+                            </Select>
+                            {/* Actually, I need to add state for this first. Terminating this replace to add state. */}
                         </div>
 
                         <div className="space-y-2">
