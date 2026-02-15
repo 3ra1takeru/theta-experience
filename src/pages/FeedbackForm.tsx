@@ -29,7 +29,7 @@ export const FeedbackForm: React.FC = () => {
         setIsSubmitting(true);
         try {
             await api.submitFeedback({
-                eventId: sessionType === 'personal_session' ? 'personal_session' : '', // 'personal_session' or empty for general/experience
+                eventId: sessionType === 'personal_session' ? 'personal_session' : 'experience', // Explicit IDs
                 authorName: name,
                 rating,
                 comment,

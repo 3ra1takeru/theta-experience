@@ -14,7 +14,9 @@ export const Testimonials: React.FC = () => {
   useEffect(() => {
     const load = async () => {
       const data = await api.getFeedback(true); // Only approved
-      setFeedbacks(data);
+      // Exclude personal session reviews
+      const experienceReviews = data.filter(f => f.eventId !== 'personal_session');
+      setFeedbacks(experienceReviews);
       setLoading(false);
     };
     load();
