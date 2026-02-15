@@ -8,6 +8,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { OCCUPATIONS } from '../constants';
 
 export const FeedbackForm: React.FC = () => {
     const navigate = useNavigate();
@@ -16,6 +17,7 @@ export const FeedbackForm: React.FC = () => {
     const [name, setName] = useState('');
     const [gender, setGender] = useState('');
     const [ageGroup, setAgeGroup] = useState('');
+    const [occupation, setOccupation] = useState('');
     const [prefecture, setPrefecture] = useState('');
     const [comment, setComment] = useState('');
     const [sessionType, setSessionType] = useState('experience'); // Default to experience
@@ -34,7 +36,9 @@ export const FeedbackForm: React.FC = () => {
                 rating,
                 comment,
                 prefecture,
-                ageGroup
+                ageGroup,
+                gender,
+                occupation
             });
             setIsSuccess(true);
             setTimeout(() => {
@@ -162,79 +166,94 @@ export const FeedbackForm: React.FC = () => {
                             </div>
                         </div>
 
-                        {/* Session Type Selection */}
                         <div className="space-y-2">
-                            <Label className="text-slate-700">参加されたメニュー</Label>
-                            <Select value={sessionType} onValueChange={setSessionType}>
-                                <SelectTrigger className="bg-white/50 border-slate-200">
-                                    <SelectValue placeholder="選択してください" />
-                                </SelectTrigger>
-                                <SelectContent>
-                                    <SelectItem value="experience">シータヒーリング体験会</SelectItem>
-                                    <SelectItem value="personal_session">個人セッション</SelectItem>
-                                </SelectContent>
-                            </Select>
-                        </div>
-
-
-
-                        <div className="space-y-2">
-                            <Label className="text-slate-700">お住まいの都道府県</Label>
-                            <Select value={prefecture} onValueChange={setPrefecture}>
+                            <Label className="text-slate-700">ご職業</Label>
+                            <Select value={occupation} onValueChange={setOccupation}>
                                 <SelectTrigger className="bg-white/50 border-slate-200">
                                     <SelectValue placeholder="選択してください" />
                                 </SelectTrigger>
                                 <SelectContent className="max-h-[200px]">
-                                    {["北海道", "青森県", "岩手県", "宮城県", "秋田県", "山形県", "福島県", "茨城県", "栃木県", "群馬県", "埼玉県", "千葉県", "東京都", "神奈川県", "新潟県", "富山県", "石川県", "福井県", "山梨県", "長野県", "岐阜県", "静岡県", "愛知県", "三重県", "滋賀県", "京都府", "大阪府", "兵庫県", "奈良県", "和歌山県", "鳥取県", "島根県", "岡山県", "広島県", "山口県", "徳島県", "香川県", "愛媛県", "高知県", "福岡県", "佐賀県", "長崎県", "熊本県", "大分県", "宮崎県", "鹿児島県", "沖縄県", "海外"].map(p => (
-                                        <SelectItem key={p} value={p}>{p}</SelectItem>
+                                    {OCCUPATIONS.map(occ => (
+                                        <SelectItem key={occ} value={occ}>{occ}</SelectItem>
                                     ))}
                                 </SelectContent>
                             </Select>
                         </div>
+                    </div>
 
-                        {/* Name */}
-                        <div className="space-y-2">
-                            <Label htmlFor="name" className="text-slate-700">お名前（ニックネーム可）</Label>
-                            <Input
-                                id="name"
-                                value={name}
-                                onChange={(e) => setName(e.target.value)}
-                                placeholder="例: シータ花子"
-                                className="bg-white/50 border-slate-200 focus:border-teal-400 focus:ring-teal-400/20"
-                                required
-                            />
+                    {/* Session Type Selection */}
+                    <div className="space-y-2">
+                        <Label className="text-slate-700">参加されたメニュー</Label>
+                        <Select value={sessionType} onValueChange={setSessionType}>
+                            <SelectTrigger className="bg-white/50 border-slate-200">
+                                <SelectValue placeholder="選択してください" />
+                            </SelectTrigger>
+                            <SelectContent>
+                                <SelectItem value="experience">シータヒーリング体験会</SelectItem>
+                                <SelectItem value="personal_session">個人セッション</SelectItem>
+                            </SelectContent>
+                        </Select>
+                    </div>
+
+
+
+                    <div className="space-y-2">
+                        <Label className="text-slate-700">お住まいの都道府県</Label>
+                        <Select value={prefecture} onValueChange={setPrefecture}>
+                            <SelectTrigger className="bg-white/50 border-slate-200">
+                                <SelectValue placeholder="選択してください" />
+                            </SelectTrigger>
+                            <SelectContent className="max-h-[200px]">
+                                {["北海道", "青森県", "岩手県", "宮城県", "秋田県", "山形県", "福島県", "茨城県", "栃木県", "群馬県", "埼玉県", "千葉県", "東京都", "神奈川県", "新潟県", "富山県", "石川県", "福井県", "山梨県", "長野県", "岐阜県", "静岡県", "愛知県", "三重県", "滋賀県", "京都府", "大阪府", "兵庫県", "奈良県", "和歌山県", "鳥取県", "島根県", "岡山県", "広島県", "山口県", "徳島県", "香川県", "愛媛県", "高知県", "福岡県", "佐賀県", "長崎県", "熊本県", "大分県", "宮崎県", "鹿児島県", "沖縄県", "海外"].map(p => (
+                                    <SelectItem key={p} value={p}>{p}</SelectItem>
+                                ))}
+                            </SelectContent>
+                        </Select>
+                    </div>
+
+                    {/* Name */}
+                    <div className="space-y-2">
+                        <Label htmlFor="name" className="text-slate-700">お名前（ニックネーム可）</Label>
+                        <Input
+                            id="name"
+                            value={name}
+                            onChange={(e) => setName(e.target.value)}
+                            placeholder="例: シータ花子"
+                            className="bg-white/50 border-slate-200 focus:border-teal-400 focus:ring-teal-400/20"
+                            required
+                        />
+                    </div>
+
+                    {/* Comment */}
+                    <div className="space-y-2">
+                        <Label htmlFor="comment" className="text-slate-700">ご感想・気づきなど</Label>
+                        <Textarea
+                            id="comment"
+                            value={comment}
+                            onChange={(e) => setComment(e.target.value)}
+                            placeholder="体験会に参加して感じたことや、変化があったことなどを自由にお書きください。"
+                            className="min-h-[120px] bg-white/50 border-slate-200 focus:border-teal-400 focus:ring-teal-400/20 resize-none"
+                            required
+                        />
+                    </div>
+
+                    <Button
+                        type="submit"
+                        className="w-full h-12 rounded-full text-base font-medium bg-gradient-to-r from-teal-500 to-teal-600 hover:from-teal-600 hover:to-teal-700 shadow-lg shadow-teal-200/50 transition-all hover:-translate-y-1"
+                        disabled={isSubmitting}
+                    >
+                        <div className="flex items-center gap-2">
+                            {isSubmitting ? (
+                                <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+                            ) : (
+                                <Send className="w-4 h-4" />
+                            )}
+                            {isSubmitting ? '送信中...' : '感想を送る'}
                         </div>
-
-                        {/* Comment */}
-                        <div className="space-y-2">
-                            <Label htmlFor="comment" className="text-slate-700">ご感想・気づきなど</Label>
-                            <Textarea
-                                id="comment"
-                                value={comment}
-                                onChange={(e) => setComment(e.target.value)}
-                                placeholder="体験会に参加して感じたことや、変化があったことなどを自由にお書きください。"
-                                className="min-h-[120px] bg-white/50 border-slate-200 focus:border-teal-400 focus:ring-teal-400/20 resize-none"
-                                required
-                            />
-                        </div>
-
-                        <Button
-                            type="submit"
-                            className="w-full h-12 rounded-full text-base font-medium bg-gradient-to-r from-teal-500 to-teal-600 hover:from-teal-600 hover:to-teal-700 shadow-lg shadow-teal-200/50 transition-all hover:-translate-y-1"
-                            disabled={isSubmitting}
-                        >
-                            <div className="flex items-center gap-2">
-                                {isSubmitting ? (
-                                    <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
-                                ) : (
-                                    <Send className="w-4 h-4" />
-                                )}
-                                {isSubmitting ? '送信中...' : '感想を送る'}
-                            </div>
-                        </Button>
-                    </form>
-                </CardContent>
-            </Card>
-        </div>
+                    </Button>
+                </form>
+            </CardContent>
+        </Card>
+        </div >
     );
 };

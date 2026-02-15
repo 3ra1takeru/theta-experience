@@ -11,7 +11,7 @@ import { Feedback } from '../types';
 import { Star, MessageSquare } from 'lucide-react';
 import { format, parseISO } from 'date-fns';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { PREFECTURES } from '../constants';
+import { PREFECTURES, OCCUPATIONS } from '../constants';
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 
 // Age groups
@@ -44,7 +44,9 @@ export const PersonalSession: React.FC = () => {
     comment: string;
     prefecture: string;
     ageGroup: string;
-  }>({ name: '', rating: 5, comment: '', prefecture: '', ageGroup: '' });
+    gender: string;
+    occupation: string;
+  }>({ name: '', rating: 5, comment: '', prefecture: '', ageGroup: '', gender: '', occupation: '' });
   const [reviewSubmitting, setReviewSubmitting] = useState(false);
   const [reviewSubmitted, setReviewSubmitted] = useState(false);
 
@@ -116,10 +118,12 @@ export const PersonalSession: React.FC = () => {
         rating: newReview.rating,
         comment: newReview.comment,
         prefecture: newReview.prefecture,
-        ageGroup: newReview.ageGroup
+        ageGroup: newReview.ageGroup,
+        gender: newReview.gender,
+        occupation: newReview.occupation
       });
       setReviewSubmitted(true);
-      setNewReview({ name: '', rating: 5, comment: '', prefecture: '', ageGroup: '' });
+      setNewReview({ name: '', rating: 5, comment: '', prefecture: '', ageGroup: '', gender: '', occupation: '' });
     } catch (error) {
       console.error('Error submitting review:', error);
     } finally {
@@ -385,6 +389,8 @@ export const PersonalSession: React.FC = () => {
                         <div className="text-xs text-slate-500 flex flex-col gap-1">
                           {review.prefecture && <span>{review.prefecture}</span>}
                           {review.ageGroup && <span>{review.ageGroup}</span>}
+                          {review.gender && <span>{review.gender}</span>}
+                          {review.occupation && <span>{review.occupation}</span>}
                         </div>
                         <p className="text-sm font-bold text-slate-900">- {review.authorName}</p>
                       </div>

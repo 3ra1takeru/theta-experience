@@ -45,6 +45,7 @@ export interface Feedback {
   gender?: string;
   ageGroup?: string;
   prefecture?: string;
+  occupation?: string;
 }
 
 export interface InstructorProfile {
