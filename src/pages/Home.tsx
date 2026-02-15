@@ -27,9 +27,9 @@ export const Home: React.FC = () => {
           .filter(evt => {
             if (evt.status !== 'upcoming') return false;
             const eventDate = new Date(evt.date);
-            const yesterday = new Date();
-            yesterday.setDate(yesterday.getDate() - 1);
-            return eventDate > yesterday;
+            const today = new Date();
+            today.setHours(0, 0, 0, 0);
+            return eventDate >= today;
           })
           .sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime())
           .slice(0, 3);
