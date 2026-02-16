@@ -131,13 +131,25 @@ export const Admin: React.FC = () => {
 
     setIsCreating(true);
     try {
-      await api.createEvent(newEvent as Omit<Event, 'id'>);
+      if (isEditing && (newEvent as Event).id) {
+        // Update existing event
+        await api.updateEvent(newEvent as Event);
+        alert('イベントを更新しました');
+      } else {
+        // Create new event
+        // Ensure ID is undefined if it crept in via duplication
+        const { id, ...createData } = newEvent as any;
+        await api.createEvent(createData);
+        alert('イベントを作成しました');
+      }
       setShowCreateModal(false);
       loadAllData();
     } catch (e) {
-      alert('イベント作成に失敗しました');
+      console.error(e);
+      alert('保存に失敗しました');
     } finally {
       setIsCreating(false);
+      setIsEditing(false); // Reset editing state
     }
   };
 
@@ -581,12 +593,13 @@ export const Admin: React.FC = () => {
                               <Button
                                 type="button" variant="outline" size="icon" className="h-8 w-8 text-teal-600 border-teal-200 hover:bg-teal-50"
                                 onClick={() => {
+                                  // Duplicate: Copy everything BUT ID
+                                  const { id, ...rest } = event;
                                   setNewEvent({
-                                    ...event,
-                                    ...event,
-                                    // Keep date for easier duplication close to original
+                                    ...rest,
                                     status: 'upcoming' // Reset status
                                   });
+                                  setIsEditing(false); // Explicitly NOT editing
                                   setShowCreateModal(true);
                                 }}
                                 title="複製して新規作成"
@@ -842,7 +855,7 @@ export const Admin: React.FC = () => {
       <Dialog open={showCreateModal} onOpenChange={setShowCreateModal}>
         <DialogContent>
           <DialogHeader>
-            <DialogTitle>新規体験会登録</DialogTitle>
+            <DialogTitle>{isEditing ? 'イベント編集' : '新規体験会登録'}</DialogTitle>
           </DialogHeader>
           <form onSubmit={handleCreateEvent} className="space-y-4 pt-4">
             <div className="space-y-2">
@@ -936,7 +949,7 @@ export const Admin: React.FC = () => {
             <DialogFooter>
               <Button type="button" variant="ghost" onClick={() => setShowCreateModal(false)}>キャンセル</Button>
               <Button type="submit" disabled={isCreating}>
-                {isCreating ? '登録中...' : '登録する'}
+                {isCreating ? '保存中...' : (isEditing ? '更新する' : '登録する')}
               </Button>
             </DialogFooter>
           </form>
