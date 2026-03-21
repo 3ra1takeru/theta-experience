@@ -26,10 +26,13 @@ export const Home: React.FC = () => {
         const upcoming = e
           .filter(evt => {
             if (evt.status !== 'upcoming') return false;
-            const eventDate = new Date(evt.date);
-            const today = new Date();
-            today.setHours(0, 0, 0, 0);
-            return eventDate >= today;
+            try {
+              const eventDateStr = format(parseISO(evt.date), 'yyyy-MM-dd');
+              const todayStr = format(new Date(), 'yyyy-MM-dd');
+              return eventDateStr >= todayStr;
+            } catch (err) {
+              return false;
+            }
           })
           .sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime())
           .slice(0, 3);

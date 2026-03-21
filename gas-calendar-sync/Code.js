@@ -318,7 +318,11 @@ function submitFeedback(data) {
         rating: data.rating,
         comment: data.comment,
         isApproved: false,
-        createdAt: new Date().toISOString()
+        createdAt: new Date().toISOString(),
+        gender: data.gender || '',
+        ageGroup: data.ageGroup || '',
+        occupation: data.occupation || '',
+        prefecture: data.prefecture || ''
     };
     addToSheet(SHEET_NAMES.FEEDBACK, newFb);
     return newFb;
@@ -435,8 +439,7 @@ function getSheet(name) {
         let headers = [];
         if (name === SHEET_NAMES.EVENTS) headers = ['id', 'title', 'description', 'date', 'startTime', 'endTime', 'type', 'location', 'capacity', 'price', 'status', 'prefecture', 'address', 'mapUrl'];
         if (name === SHEET_NAMES.REGISTRATIONS) headers = ['id', 'eventId', 'applicantName', 'email', 'phone', 'registeredAt', 'status', 'surveySent', 'prefecture', 'dob', 'paymentMethod'];
-        if (name === SHEET_NAMES.FEEDBACK) headers = ['id', 'eventId', 'authorName', 'rating', 'comment', 'isApproved', 'createdAt'];
-        if (name === SHEET_NAMES.FEEDBACK) headers = ['id', 'eventId', 'authorName', 'rating', 'comment', 'isApproved', 'createdAt'];
+        if (name === SHEET_NAMES.FEEDBACK) headers = ['id', 'eventId', 'authorName', 'rating', 'comment', 'isApproved', 'createdAt', 'gender', 'ageGroup', 'occupation', 'prefecture'];
         if (name === SHEET_NAMES.INSTRUCTOR) headers = ['name', 'title', 'introduction', 'imageUrl'];
         if (name === SHEET_NAMES.SETTINGS) headers = ['key', 'value'];
 
