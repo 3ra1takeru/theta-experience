@@ -147,6 +147,25 @@ export const Schedule: React.FC = () => {
     await submitRegistration();
   };
 
+  const displayEvents = events
+    .filter(e => {
+      if (showPastEvents) return true;
+      try {
+        const eventDateStr = format(parseISO(e.date), 'yyyy-MM-dd');
+        const todayStr = format(new Date(), 'yyyy-MM-dd');
+        return eventDateStr >= todayStr;
+      } catch (err) {
+        return false;
+      }
+    })
+    .sort((a, b) => {
+      const tA = new Date(a.date).getTime();
+      const tB = new Date(b.date).getTime();
+      if (isNaN(tA)) return 1;
+      if (isNaN(tB)) return -1;
+      return tA - tB;
+    });
+
   if (loading) {
     return <div className="min-h-screen flex items-center justify-center"><div className="animate-spin rounded-full h-12 w-12 border-b-2 border-teal-600"></div></div>;
   }
@@ -171,31 +190,12 @@ export const Schedule: React.FC = () => {
         </div>
 
         <div className="space-y-6">
-          {events
-            .filter(e => {
-              if (showPastEvents) return true;
-              // Filter out past events (strictly before today)
-              try {
-                const eventDateStr = format(parseISO(e.date), 'yyyy-MM-dd');
-                const todayStr = format(new Date(), 'yyyy-MM-dd');
-                return eventDateStr >= todayStr;
-              } catch (err) {
-                return false;
-              }
-            })
-            .sort((a, b) => {
-              const tA = new Date(a.date).getTime();
-              const tB = new Date(b.date).getTime();
-              if (isNaN(tA)) return 1;
-              if (isNaN(tB)) return -1;
-              return tA - tB;
-            })
-            .length === 0 ? (
+          {displayEvents.length === 0 ? (
             <div className="text-center py-12 bg-white/50 border border-dashed border-slate-200 rounded-xl">
               <p className="text-slate-500">現在予定されている体験会はありません。</p>
             </div>
           ) : (
-            events.map(event => {
+            displayEvents.map(event => {
               const remaining = getRemainingSeats(event.id, event.capacity);
               const isFull = remaining === 0;
 
